@@ -33,14 +33,3 @@ export function SectionEdge() {
     </svg>
   )
 }
-
-export function InkFilter() {
-  return <svg className="ink-filter" width="0" height="0" aria-hidden="true">
-    <defs>
-      <filter id="control-ripple" x="-25%" y="-55%" width="150%" height="210%" colorInterpolationFilters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency=".039 .075" numOctaves="2" seed="12" result="grain"/>
-        <feDisplacementMap in="SourceGraphic" in2="grain" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
-    </defs>
-  </svg>
-}

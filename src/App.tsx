@@ -1,6 +1,6 @@
 import { LanguageSelector, useLanguage } from './language'
 import { Orbit } from './components/Orbit'
-import { InkFilter, SectionEdge } from './components/SectionEdge'
+import { SectionEdge } from './components/SectionEdge'
 import { assetUrl } from './assets'
 import { useRef, useState } from 'react'
 import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, Menu, X } from 'lucide-react'
@@ -28,11 +28,11 @@ function Header() {
         <img src={assetUrl('logo-inflated.webp')} width="600" height="290" alt="ro."/>
       </a>
       <div className="header-controls">
-        <button className="menu-toggle ink-control" ref={opener} type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="navigation">
+        <button className="menu-toggle paper-control" ref={opener} type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="navigation">
           {open ? <X size={20}/> : <Menu size={20}/>}<span>{t(open ? 'Cerrar' : 'Menú')}</span>
         </button>
         <nav id="navigation" className={`main-nav ${open ? 'is-open' : ''}`} aria-label={t('Navegación principal')}>
-          {navigation.map(([label, href]) => <a key={href} href={href} className="ink-control" onClick={() => setOpen(false)}>{t(label)}</a>)}
+          {navigation.map(([label, href]) => <a key={href} href={href} className="paper-control" onClick={() => setOpen(false)}>{t(label)}</a>)}
         </nav>
         <LanguageSelector/>
       </div>
@@ -58,7 +58,7 @@ function Hero() {
         <div className="hero-copy">
           <p className="hero-role">{t(personal.role)}</p>
           <p className="hero-tagline">{t(personal.tagline)}</p>
-          <a className="scroll-link ink-control" href="#proyectos">
+          <a className="scroll-link paper-control" href="#proyectos">
             {t('Explorar proyectos')}
             <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
           </a>
@@ -76,7 +76,7 @@ function Hero() {
 
 function DownloadCV() {
   const { t } = useLanguage()
-  return personal.cv && <a className="pill ink-control" href={assetUrl(personal.cv)} download data-magnetic><Download size={17}/> {t('Descargar CV')}</a>
+  return personal.cv && <a className="pill paper-control" href={assetUrl(personal.cv)} download><Download size={17}/> {t('Descargar CV')}</a>
 }
 
 function About() {
@@ -117,12 +117,12 @@ function Contact() {
       <h2 data-reveal>{t('Hablemos')}<span className="accent">.</span></h2>
       {personal.email && <div className="email-line">
         <a className="email" href={`mailto:${personal.email}`}>{personal.email}</a>
-        <button type="button" className="copy-button ink-control" onClick={copyEmail} aria-label={t('Copiar correo')} title={t('Copiar correo')} data-magnetic>{copyStatus === 'Correo copiado.' ? <Check size={19}/> : <Copy size={19}/>}</button>
+        <button type="button" className="copy-button paper-control" onClick={copyEmail} aria-label={t('Copiar correo')} title={t('Copiar correo')}>{copyStatus === 'Correo copiado.' ? <Check size={19}/> : <Copy size={19}/>}</button>
       </div>}
       <p className="copy-status" role="status">{t(copyStatus)}</p>
       <div className="link-row">
-        {personal.github && <a className="pill ink-control" href={personal.github}><CodeXml size={17}/> GitHub</a>}
-        {personal.linkedin && <a className="pill ink-control" href={personal.linkedin}><BriefcaseBusiness size={17}/> LinkedIn</a>}
+        {personal.github && <a className="pill paper-control" href={personal.github}><CodeXml size={17}/> GitHub</a>}
+        {personal.linkedin && <a className="pill paper-control" href={personal.linkedin}><BriefcaseBusiness size={17}/> LinkedIn</a>}
         <DownloadCV/>
       </div>
       <div className="footer-bar">
@@ -140,7 +140,6 @@ export default function App() {
   usePortfolioMotion(scope)
   usePointerEffects(scope)
   return <div ref={scope}>
-    <InkFilter/>
     <a className="skip-link" href="#contenido">{t('Saltar al contenido')}</a>
     <Header/>
     <main id="contenido">

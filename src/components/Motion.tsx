@@ -140,37 +140,6 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     const pointer = matchMedia('(hover: hover) and (pointer: fine)')
     if (!root) return
     const cursor = root.querySelector<HTMLElement>('.cursor-ring')
-    const ripple = root.querySelector('#control-ripple feDisplacementMap')
-    let rippleAnimation: gsap.core.Timeline | undefined
-    let ripplingControl: HTMLElement | null = null
-
-    function clearRipple() {
-      ripplingControl?.removeAttribute('data-rippling')
-      ripple?.setAttribute('scale', '0')
-      ripplingControl = null
-    }
-
-    function rippleControl(event: PointerEvent | FocusEvent) {
-      if (!ripple || !(event.target instanceof Element)) return
-      const control = event.target.closest<HTMLElement>('.project-trigger, .catalog-entry') ??
-        event.target.closest<HTMLElement>('.ink-control')
-      if (!control) return
-
-      if (event.type === 'pointerover' && (
-        !(event instanceof PointerEvent) || event.pointerType === 'touch' ||
-        (event.relatedTarget instanceof Node && control.contains(event.relatedTarget))
-      )) return
-      if (event.type === 'focusin' && !control.matches(':focus-visible')) return
-
-      rippleAnimation?.kill()
-      clearRipple()
-      ripplingControl = control
-      control.setAttribute('data-rippling', '')
-      rippleAnimation = gsap.timeline({ onComplete: clearRipple })
-        .to(ripple, { attr: { scale: 29 }, duration: .2, ease: 'power2.out' })
-        .to(ripple, { attr: { scale: 0 }, duration: .65, ease: 'power2.out' })
-    }
-
     let active: HTMLElement | null = null
 
     function reset() {
@@ -182,7 +151,7 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
 
     function move(event: PointerEvent) {
       if (!pointer.matches || event.pointerType !== 'mouse' || !(event.target instanceof Element)) return
-      const target = event.target.closest<HTMLElement>('[data-magnetic], .orbit-panel')
+      const target = event.target.closest('.orbit-visual')?.closest<HTMLElement>('.orbit-panel') ?? null
       if (target !== active) {
         reset()
         active = target
@@ -199,19 +168,11 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     }
 
     root.addEventListener('pointermove', move)
-    root.addEventListener('pointerover', rippleControl)
-    root.addEventListener('pointerdown', rippleControl)
-    root.addEventListener('focusin', rippleControl)
     root.addEventListener('pointerleave', reset)
     root.addEventListener('click', reset)
     pointer.addEventListener('change', reset)
     return () => {
-      rippleAnimation?.kill()
-      clearRipple()
       root.removeEventListener('pointermove', move)
-      root.removeEventListener('pointerover', rippleControl)
-      root.removeEventListener('pointerdown', rippleControl)
-      root.removeEventListener('focusin', rippleControl)
       root.removeEventListener('pointerleave', reset)
       root.removeEventListener('click', reset)
       pointer.removeEventListener('change', reset)
