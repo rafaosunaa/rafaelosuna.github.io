@@ -5,7 +5,6 @@ import {
   Color,
   DataTexture,
   DataUtils,
-  DoubleSide,
   Group,
   HalfFloatType,
   LinearFilter,
@@ -243,9 +242,14 @@ function buildGeometry(shape: ReturnType<typeof buildShape>) {
     for (const [a, b, c, side] of triangles) {
       const shard = nearestSeed((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
       for (const vertex of [a, b, c]) {
-        position.set([toWorldX(vertex.x), toWorldY(vertex.y), 0], cursor * 3)
-        shapeAttribute.set([vertex.height, vertex.gx, vertex.gy, side], cursor * 4)
-        maskUv.set([(vertex.x + .5) / w, (vertex.y + .5) / h], cursor * 2)
+        position[cursor * 3] = toWorldX(vertex.x)
+        position[cursor * 3 + 1] = toWorldY(vertex.y)
+        shapeAttribute[cursor * 4] = vertex.height
+        shapeAttribute[cursor * 4 + 1] = vertex.gx
+        shapeAttribute[cursor * 4 + 2] = vertex.gy
+        shapeAttribute[cursor * 4 + 3] = side
+        maskUv[cursor * 2] = (vertex.x + .5) / w
+        maskUv[cursor * 2 + 1] = (vertex.y + .5) / h
         shardAttribute[cursor] = shard
         cursor += 1
       }
@@ -372,6 +376,13 @@ const fragmentNormal = /* glsl */ `
   nonPerturbedNormal = normal;
 `
 
+const fragmentCoverage = /* glsl */ `
+  vec4 fieldSample = texture2D(uMask, vMaskUv);
+  float edgeWidth = clamp(fwidth(fieldSample.a) * .55, .015, .5);
+  diffuseColor.a *= smoothstep(.5 - edgeWidth, .5 + edgeWidth, fieldSample.a);
+  if (diffuseColor.a < .004) discard;
+`
+
 export function createInflatedLogo(artwork: HTMLImageElement, host: HTMLElement, onContextLost?: () => void): InflatedLogo {
   const canvas = document.createElement('canvas')
   canvas.className = 'intro-canvas'
@@ -416,9 +427,8 @@ export function createInflatedLogo(artwork: HTMLImageElement, host: HTMLElement,
     roughness: .2,
     clearcoat: 1,
     clearcoatRoughness: .12,
-    side: DoubleSide,
-    alphaTest: .5,
-    alphaToCoverage: true,
+    transparent: true,
+    premultipliedAlpha: true,
   })
   material.customProgramCacheKey = () => 'inflated-logo'
   material.onBeforeCompile = shader => {
@@ -429,7 +439,7 @@ export function createInflatedLogo(artwork: HTMLImageElement, host: HTMLElement,
       .replace('#include <begin_vertex>', 'vec3 transformed = shapedPosition;')
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>\n${fragmentHead}`)
-      .replace('#include <alphatest_fragment>', 'vec4 fieldSample = texture2D(uMask, vMaskUv);\ndiffuseColor.a = fieldSample.a;\n#include <alphatest_fragment>')
+      .replace('#include <alphatest_fragment>', fragmentCoverage)
       .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>\n${fragmentNormal}`)
   }
 
@@ -440,24 +450,36 @@ export function createInflatedLogo(artwork: HTMLImageElement, host: HTMLElement,
   scene.add(group)
 
   const camera = new PerspectiveCamera(28, 1, 1, 10)
+  let showingShards = false
 
   const layout = () => {
     const width = Math.max(host.clientWidth, 1)
     const height = Math.max(host.clientHeight, 1)
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25, Math.sqrt(950_000 / (width * height))))
-    renderer.setSize(width, height, false)
-
     const aspect = shape.sourceWidth / shape.sourceHeight
     const logoWidth = Math.min(width * (width < 720 ? .7 : .44), 640, height * .5 * aspect)
     const unitsPerPixel = shape.sourceWidth / logoWidth
     const visibleHeight = height * unitsPerPixel
     const distance = visibleHeight / (2 * Math.tan((camera.fov * Math.PI) / 360))
 
-    camera.aspect = width / height
+    // Keep the same projection while rendering a smaller, denser canvas around the intact logo.
+    // Only the shards need the full viewport.
+    const viewWidth = showingShards ? width : Math.min(width, Math.ceil(logoWidth * 1.27 + 16))
+    const viewHeight = showingShards ? height : Math.min(height, Math.ceil(logoWidth / aspect * 1.42 + 16))
+    const left = Math.floor((width - viewWidth) * .5)
+    const top = Math.min(height - viewHeight, Math.max(0, Math.floor(height * LOGO_CENTER_Y - viewHeight * .5)))
+    const pixels = showingShards ? 900_000 : 760_000
+    const pixelRatio = showingShards ? Math.min(devicePixelRatio, 1.25) : Math.min(Math.max(devicePixelRatio, 1.5), 1.85)
+    renderer.setPixelRatio(Math.min(pixelRatio, Math.sqrt(pixels / (viewWidth * viewHeight))))
+    renderer.setSize(viewWidth, viewHeight, false)
+    canvas.style.left = `${left}px`
+    canvas.style.top = `${top}px`
+    canvas.style.width = `${viewWidth}px`
+    canvas.style.height = `${viewHeight}px`
+
     camera.near = distance * .08
     camera.far = distance * 2.2
     camera.position.set(0, 0, distance)
-    camera.updateProjectionMatrix()
+    camera.setViewOffset(width, height, left, top, viewWidth, viewHeight)
     group.position.y = (.5 - LOGO_CENTER_Y) * visibleHeight
     uniforms.uReach.value = Math.hypot(width, height) * unitsPerPixel * .5
     uniforms.uDistance.value = distance * .55
@@ -473,6 +495,10 @@ export function createInflatedLogo(artwork: HTMLImageElement, host: HTMLElement,
     state,
     burstEnd: 1 + BURST_SPREAD,
     render(seconds) {
+      if (state.burst > 0 && !showingShards) {
+        showingShards = true
+        layout()
+      }
       const body = smooth(Math.min(state.pressure / .8, 1))
       const stress = Math.max(0, (state.pressure - .8) / .2)
       uniforms.uTime.value = seconds
