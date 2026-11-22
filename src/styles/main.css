@@ -278,9 +278,14 @@ button { cursor: pointer; }
 }
 
 .orbit-panel[data-playing="true"] :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
-  /* Keep the user’s explicit play choice effective even with reduced motion. */
-  animation-duration: var(--orbit-duration) !important;
   animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The orbit control owns playback and can pause at the current frame. */
+  .orbit-panel :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
+    animation-duration: var(--orbit-duration) !important;
+  }
 }
 
 .orbital svg > [class] { transform-origin: 250px 238px; }
