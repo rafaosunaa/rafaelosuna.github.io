@@ -15,12 +15,17 @@
         position: fixed;
         inset: 0;
         z-index: 100;
+        overflow: hidden;
         visibility: hidden;
         pointer-events: none;
       }
       html[data-preloading] .intro { visibility: visible; pointer-events: auto; }
       html[data-preloading] .site-header .brand { opacity: 0; }
       .intro-sheet { position: absolute; inset: 0; background: #f8f0de; }
+      .intro-sheet[data-burst] {
+        --intro-opening: 0px;
+        mask-image: radial-gradient(circle at 50% 36%, transparent calc(var(--intro-opening) - 2px), #000 var(--intro-opening));
+      }
       .intro-brand-slot {
         position: absolute;
         top: 36%;
@@ -29,36 +34,20 @@
         justify-content: center;
         transform: translateY(-50%);
       }
-      .intro-brand { width: clamp(8rem, 22vmin, 15rem); }
+      .intro-brand { position: relative; width: clamp(8rem, 22vmin, 15rem); }
       .intro-brand img { display: block; width: 100%; height: auto; }
-      .intro-ring {
-        position: absolute;
-        top: 73%;
-        inset-inline: 0;
-        margin-inline: auto;
-        width: clamp(3rem, 7vmin, 4.15rem);
-        fill: none;
-        stroke-width: 2.5;
-      }
-      .intro-track { stroke: #17447827; }
-      .intro-progress {
-        stroke: #174478;
-        stroke-linecap: round;
-        stroke-dasharray: 100;
-        stroke-dashoffset: 100;
-      }
+      .intro-fragments, .intro-fragment { position: absolute; inset: 0; }
+      .intro-fragments { visibility: hidden; }
+      .intro-fragment { background-size: 100% 100%; }
       html[data-preloading] .intro-brand { animation: intro-arrive .58s cubic-bezier(.22,.68,.23,1) backwards; }
-      html[data-preloading] .intro-brand img { animation: intro-inflate .82s cubic-bezier(.2,.7,.25,1) both; }
-      html[data-preloading] .intro-ring { animation: intro-arrive .54s .12s cubic-bezier(.22,.68,.23,1) backwards; }
-      html[data-preloading] .intro-progress { animation: intro-trace .85s .18s ease-out both; }
+      html[data-preloading] .intro-brand img { animation: intro-inflate .95s ease-out both; }
       @keyframes intro-arrive {
         from { opacity: 0; translate: 0 min(30vh, 12rem); }
         to { opacity: 1; translate: 0 0; }
       }
-      @keyframes intro-trace { to { stroke-dashoffset: 23; } }
       @keyframes intro-inflate {
-        from { scale: .82 .62; filter: brightness(.82); }
-        68% { scale: 1.05 1.09; filter: brightness(1.04); }
+        from { scale: .58 .48; filter: brightness(.85); }
+        58% { scale: .93 .87; filter: brightness(.98); }
         to { scale: 1; filter: brightness(1); }
       }
     </style>
@@ -70,10 +59,6 @@
       <div class="intro-brand-slot">
         <div class="intro-brand"><img src="/logo-inflated.webp" width="600" height="290" alt="ro." fetchpriority="high"></div>
       </div>
-      <svg class="intro-ring" viewBox="0 0 48 48" focusable="false">
-        <circle class="intro-track" cx="24" cy="24" r="20"></circle>
-        <circle class="intro-progress" cx="24" cy="24" r="20" pathLength="100" transform="rotate(-90 24 24)"></circle>
-      </svg>
     </div>
     <script>
       if (!location.hash || location.hash === '#inicio') {
