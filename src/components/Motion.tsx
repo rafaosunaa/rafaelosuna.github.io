@@ -68,33 +68,6 @@ function animateSectionEdges(root: HTMLElement) {
       .to(tear, { attr: { transform: 'scale(1 1.08)' }, duration: .5, ease: 'sine.inOut' })
       .to(tear, { attr: { transform: 'scale(1 1)' }, duration: .5, ease: 'sine.inOut' })
   }
-
-  const reveals = new Map<Element, gsap.core.Tween>()
-  const observer = new IntersectionObserver(entries => {
-    for (const entry of entries) {
-      const sheet = entry.target
-      if (!entry.isIntersecting) {
-        reveals.get(sheet)?.kill()
-        reveals.delete(sheet)
-        gsap.set(sheet, { clearProps: 'clipPath,visibility' })
-        continue
-      }
-      if (entry.intersectionRatio < .18 || reveals.has(sheet)) continue
-
-      gsap.set(sheet, { visibility: 'visible', clipPath: 'inset(0 0 0 0)' })
-      reveals.set(sheet, gsap.to(sheet, {
-        clipPath: 'inset(0 0 0 100%)', duration: .93, ease: 'power3.inOut', clearProps: 'clipPath,visibility',
-      }))
-    }
-  }, { threshold: [0, .18] })
-
-  const sheets = root.querySelectorAll('.project-reveal')
-  sheets.forEach(sheet => observer.observe(sheet))
-  return () => {
-    observer.disconnect()
-    reveals.forEach(reveal => reveal.kill())
-    gsap.set(sheets, { clearProps: 'clipPath,visibility' })
-  }
 }
 
 export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
@@ -111,7 +84,7 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     const disposePreloader = animatePreloader(root)
 
     const motion = gsap.context(() => {
-      const disposeEdges = animateSectionEdges(root)
+      animateSectionEdges(root)
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue
         gsap.from(item, {
@@ -123,7 +96,6 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
         y: 22, ease: 'none',
         scrollTrigger: { trigger: root.querySelector('.hero'), start: 'top top', end: 'bottom top', scrub: true },
       })
-      return disposeEdges
     }, root)
     return () => {
       document.removeEventListener('portfolio:preloaded', playTitle)

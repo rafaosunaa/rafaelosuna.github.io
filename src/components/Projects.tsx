@@ -5,7 +5,6 @@ import { CirclePlus, CodeXml, FileText, GitFork, Play, Search, X } from 'lucide-
 import { categories, projects } from '../data/projects'
 import type { Category, Project } from '../data/projects'
 import { ProjectArtwork } from './Artwork'
-import { PaperFold } from './PaperFold'
 import { SectionEdge } from './SectionEdge'
 
 const filters = ['Todos', ...categories] as const
@@ -73,8 +72,6 @@ export function Projects() {
               <button type="button" className="project-trigger" aria-label={`${t("Ver destacado")}: ${t(project.title)}`} onClick={event => openProject(project, event.currentTarget)}>
                 <span className="art-wrap">
                   <Media project={project} />
-                  <PaperFold/>
-                  <span className="project-reveal" aria-hidden="true"/>
                   {!project.image && <span className="art-caption">{t('Ilustración conceptual')}</span>}
                   <span className="project-open paper-control" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
                 </span>

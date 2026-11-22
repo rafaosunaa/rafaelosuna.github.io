@@ -86,10 +86,7 @@
     </div>
     <script>
       (function () {
-        var seen = false;
-        try { seen = sessionStorage.getItem('intro-seen') === '1'; } catch (e) {}
-        var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if ((location.hash && location.hash !== '#inicio') || seen || calm) return;
+        if (location.hash && location.hash !== '#inicio') return;
         var page = document.documentElement;
         var app = document.getElementById('root');
         document.querySelector('.intro').dataset.started = String(performance.now());
@@ -99,7 +96,6 @@
           window.clearTimeout(deadline);
           window.removeEventListener('pointerdown', skip);
           window.removeEventListener('keydown', skip);
-          try { sessionStorage.setItem('intro-seen', '1'); } catch (e) {}
           page.removeAttribute('data-preloading');
           app.inert = false;
         }, { once: true });

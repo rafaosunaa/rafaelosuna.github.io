@@ -62,7 +62,7 @@ export function ProjectArtwork({ kind }: { kind: Artwork }) {
         <pattern id={id} width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" stroke="currentColor" opacity=".16" fill="none"/></pattern>
       </defs>
       <rect width="640" height="340" fill={`url(#${id})`}/>
-      <g className="art-drawing">{art[kind]}</g>
+      {art[kind]}
     </svg>
   )
 }

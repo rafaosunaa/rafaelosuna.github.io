@@ -157,7 +157,6 @@ button { cursor: pointer; }
 }
 .hero::before, .about::before, .resume::before { z-index: -1; opacity: .16; }
 .orbit-visual .orbits-float { width: min(100%, 22rem, 44svh); }
-.paper-fold { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
 .orbital { display: block; width: 100%; height: auto; transform: translate(var(--shift-x, 0px), var(--shift-y, 0px)); transition: transform .38s var(--motion); }
 .orbit-cross { position: absolute; color: #4b6886; font: 400 1rem var(--folio-mono); }
 .orbit-cross.one { left: 12%; top: 12%; }
@@ -243,20 +242,10 @@ button { cursor: pointer; }
 .project-trigger { display: grid; grid-template-rows: auto 1fr; width: 100%; height: 100%; text-align: left; }
 .project-trigger:focus-visible { outline-offset: -5px; }
 .art-wrap { display: block; aspect-ratio: 640/340; position: relative; overflow: hidden; isolation: isolate; background: var(--folio-paper); }
-.project-reveal {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  visibility: hidden;
-  pointer-events: none;
-  background: linear-gradient(115deg, #123b69 0 52%, #567a9e 75%, var(--folio-paper));
-}
 .project-art, .project-image { display: block; height: 100%; width: 100%; object-fit: cover; }
 .project-art { color: var(--folio-ink); background: radial-gradient(ellipse at 52% 38%, #fcf5e6, #e7e5d8 100%); }
 .art-blueprint, .art-network, .art-connect { background: radial-gradient(ellipse at 52% 38%, #f0f3ee, #d5e0e7 100%); }
 .art-solar { background: radial-gradient(ellipse at 56% 48%, #f5f3e7, #dce6ea 100%); }
-.art-drawing, .project-image { transform-origin: center; transition: transform .65s var(--motion); }
-.project-trigger:hover :is(.art-drawing, .project-image), .project-trigger:focus-visible :is(.art-drawing, .project-image) { transform: scale(1.07); }
 .art-caption { position: absolute; z-index: 3; left: .75rem; bottom: .65rem; padding: .28rem .44rem; background: var(--folio-paper); color: var(--folio-ink); border: 1px solid var(--folio-rule); font: 400 .84rem var(--folio-mono); }
 .project-open { position: absolute; z-index: 3; right: .65rem; top: .65rem; background: var(--folio-paper); color: var(--folio-ink); width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border: 1px solid var(--folio-rule); transition: background .25s, color .25s; }
 .project-label { display: block; padding: .85rem .9rem 1rem; border-top: 1px solid var(--inverse-rule); }
@@ -483,15 +472,6 @@ button { cursor: pointer; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: clamp(1.15rem, 2.1vw, 2rem); }
 .hero-actions .scroll-link { margin-top: 0; }
 .hero-actions .pill { min-height: 3rem; }
-
-/* ---- Movimiento reducido ---- */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-  .paper-control:hover, .paper-control:active { transform: none; }
-  .project-reveal, .cursor-ring { display: none !important; }
-  .art-drawing, .project-image { transform: none !important; }
-}
 
 /* ---- Acento, menú con sección activa y detalles ---- */
 .main-nav a { position: relative; }
