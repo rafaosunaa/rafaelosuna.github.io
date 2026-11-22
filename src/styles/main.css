@@ -74,23 +74,37 @@ button { cursor: pointer; }
   filter: url(#control-ripple);
 }
 
-.section-curtain {
+.section-transition {
   position: fixed;
   inset: 0;
-  visibility: hidden;
-  pointer-events: none;
   overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
   z-index: 22;
 }
-.section-curtain-layer {
+.section-transition[data-effect] { visibility: visible; }
+.transition-panel { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+.section-transition[data-effect="displacement"] .transition-displacement,
+.section-transition[data-effect="image-reveal"] .transition-image-reveal,
+.section-transition[data-effect="topography"] .transition-topography,
+.section-transition[data-effect="morph"] .transition-morph { display: block; }
+
+.transition-displacement canvas, .transition-plate, .transition-reveal-art, .transition-reveal-sheet {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  fill: #b8c8d5;
 }
-.section-curtain-layer:nth-child(2) { fill: var(--folio-ink); }
-.section-curtain-layer:nth-child(3) { fill: var(--folio-paper); }
+.transition-displacement canvas { display: none; }
+.transition-displacement[data-renderer="webgl"] canvas { display: block; }
+.transition-plate:first-child .project-art { color: var(--light-ink); background: var(--folio-ink); }
+.transition-plate:nth-child(2) { clip-path: var(--sweep-clip, inset(0 100% 0 0)); }
+.transition-displacement[data-renderer="webgl"] .transition-plate { visibility: hidden; }
+
+.transition-image-reveal { background: var(--deep-ink); }
+.transition-reveal-art { transform-origin: center; }
+.transition-reveal-art .project-art { background: var(--folio-paper); }
+.transition-reveal-sheet { background: #b9ccdf; }
 
 .site-header { position: sticky; z-index: 10; top: 0; background: var(--folio-paper); color: var(--folio-ink); }
 .header-inner { position: relative; min-height: 4.9rem; display: flex; align-items: center; justify-content: space-between; }

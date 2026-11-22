@@ -2,10 +2,11 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { observeSectionTransitions } from './SectionTransitions'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
+function observeHeroTitle(root: HTMLElement, isCovered: () => boolean) {
   const title = root.querySelector<HTMLElement>('#hero-title')
   const fill = title?.querySelector<HTMLElement>('.hero-name--fill')
   if (
@@ -25,7 +26,7 @@ function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
   }
 
   const playIfVisible = () => {
-    if (!visible || !ready || isIntroPlaying()) return
+    if (!visible || !ready || isCovered()) return
 
     ready = false
     gsap.set(title, { attr: { 'data-filling': 'true' } })
@@ -102,49 +103,6 @@ function animateSectionEdges(root: HTMLElement) {
   }
 }
 
-const sectionAnchors = new Set(['inicio', 'proyectos', 'catalogo', 'sobre-mi', 'trayectoria', 'contacto'])
-
-function listenForSectionLinks(root: HTMLElement) {
-  const curtain = root.querySelector<HTMLElement>('.section-curtain')
-  if (!curtain) return
-  const layers = curtain.querySelectorAll('.section-curtain-layer')
-  let playback: gsap.core.Timeline | undefined
-
-  const clearCurtain = () => {
-    gsap.set(curtain, { clearProps: 'visibility,opacity' })
-    gsap.set(layers, { clearProps: 'transform' })
-  }
-
-  function moveBetweenSections(event: MouseEvent) {
-    if (
-      event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey ||
-      event.altKey || !(event.target instanceof Element)
-    ) return
-    const link = event.target.closest<HTMLAnchorElement>('a[href^="#"]')
-    const id = link?.getAttribute('href')?.slice(1)
-    if (!link || !id || !sectionAnchors.has(id) || (link.target && link.target !== '_self')) return
-    const section = document.getElementById(id)
-    if (!section) return
-    const distance = section.getBoundingClientRect().top - (root.querySelector('.site-header')?.getBoundingClientRect().height ?? 0)
-    if (Math.abs(distance) < 54) return
-
-    playback?.kill()
-    clearCurtain()
-    playback = gsap.timeline({ onComplete: clearCurtain })
-    const direction = distance > 0 ? 1 : -1
-    playback.set(curtain, { autoAlpha: 1 }).fromTo(layers, { yPercent: 106 * direction }, {
-      yPercent: -110 * direction, duration: .9, stagger: .07, ease: 'power2.inOut',
-    }, 0)
-  }
-
-  root.addEventListener('click', moveBetweenSections)
-  return () => {
-    root.removeEventListener('click', moveBetweenSections)
-    playback?.kill()
-    clearCurtain()
-  }
-}
-
 export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const root = scope.current
@@ -154,8 +112,9 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     if (initialSection && scrollY === 0) initialSection.scrollIntoView({ behavior: 'instant' })
 
     let introPlaying = false
-    const title = observeHeroTitle(root, () => introPlaying)
-    const disposeSectionLinks = listenForSectionLinks(root)
+    const cover = root.querySelector('.section-transition')
+    const title = observeHeroTitle(root, () => introPlaying || Boolean(cover?.hasAttribute('data-effect')))
+    const disposeSectionTransitions = observeSectionTransitions(root, () => title?.playIfVisible())
 
     function finishIntro() {
       if (!introPlaying) return
@@ -200,7 +159,7 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     }, root)
     return () => {
       title?.dispose()
-      disposeSectionLinks?.()
+      disposeSectionTransitions?.()
       motion.revert()
     }
   }, [scope])
