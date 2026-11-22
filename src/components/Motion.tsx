@@ -5,19 +5,88 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
+  const title = root.querySelector<HTMLElement>('#hero-title')
+  const fill = title?.querySelector<HTMLElement>('.hero-name--fill')
+  if (
+    !title || !fill ||
+    !CSS.supports('-webkit-text-stroke', '1px currentColor') ||
+    !CSS.supports('clip-path', 'inset(0 100% 0 0)')
+  ) return
+
+  const minimumVisible = .45
+  let visible = false
+  let ready = true
+  let animation: gsap.core.Tween | undefined
+
+  const clearFill = () => {
+    title.removeAttribute('data-filling')
+    fill.style.removeProperty('clip-path')
+  }
+
+  const playIfVisible = () => {
+    if (!visible || !ready || isIntroPlaying()) return
+
+    ready = false
+    gsap.set(title, { attr: { 'data-filling': 'true' } })
+    gsap.set(fill, { clipPath: 'inset(0 100% 0 0)' })
+    animation = gsap.to(fill, {
+      clipPath: 'inset(0 0% 0 0)', delay: .18, duration: 1.12, ease: 'power2.inOut',
+      onComplete: clearFill,
+    })
+  }
+
+  const headerHeight = root.querySelector('.site-header')?.getBoundingClientRect().height ?? 0
+  const observer = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting && entry.intersectionRatio >= minimumVisible
+    if (!entry.isIntersecting) {
+      animation?.kill()
+      clearFill()
+      ready = true
+    }
+    playIfVisible()
+  }, { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: [0, minimumVisible] })
+  observer.observe(title)
+
+  return {
+    playIfVisible,
+    dispose() {
+      observer.disconnect()
+      ready = false
+      animation?.kill()
+      clearFill()
+    },
+  }
+}
+
 export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const root = scope.current
     if (!root) return
+
+    const initialSection = document.getElementById(location.hash.slice(1))
+    if (initialSection && scrollY === 0) initialSection.scrollIntoView({ behavior: 'instant' })
+
+    let introPlaying = false
+    let introShown = false
+    const title = observeHeroTitle(root, () => introPlaying)
     const motion = gsap.matchMedia()
+
+    function finishIntro() {
+      if (!introPlaying) return
+      introPlaying = false
+      // Let GSAP leave the intro context before it starts the title tween.
+      queueMicrotask(() => title?.playIfVisible())
+    }
+
     motion.add('(prefers-reduced-motion: no-preference)', () => {
       const intro = root.querySelector('.intro')
       const counter = root.querySelector('.intro-count')
-      const title = root.querySelector('#hero-title')
-      const titleFill = title?.querySelector('.hero-name--fill')
       const progress = { value: 0 }
       const timeline = gsap.timeline()
-      if (intro && counter && !location.hash && scrollY < 40) {
+      if (intro && counter && !introShown && !location.hash && scrollY < 40) {
+        introPlaying = true
+        introShown = true
         timeline.set(intro, { visibility: 'visible' })
           .to(progress, {
             value: 100, duration: .44, ease: 'power2.out',
@@ -25,17 +94,11 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
           })
           .to(intro, { clipPath: 'inset(0 0 100% 0)', duration: .55, ease: 'power3.inOut' })
           .set(intro, { visibility: 'hidden' })
-      }
-      if (title && titleFill && CSS.supports('-webkit-text-stroke', '1px currentColor') && CSS.supports('clip-path', 'inset(0 100% 0 0)')) {
-        timeline.set(title, { attr: { 'data-filling': 'true' } }, 0)
-          .set(titleFill, { clipPath: 'inset(0 100% 0 0)' }, 0)
-          .to(titleFill, { clipPath: 'inset(0 0% 0 0)', duration: 1.08, ease: 'power2.inOut' }, '+=.08')
-          .set(title, { attr: { 'data-filling': 'false' } })
-          .set(titleFill, { clearProps: 'clipPath' }, '<')
+          .call(finishIntro)
       }
       timeline.from(root.querySelectorAll('.hero-copy, .orbit-panel'), {
         y: 16, opacity: 0, duration: .55, ease: 'power2.out', stagger: .08, clearProps: 'transform,opacity',
-      }, '-=.37')
+      }, '+=.76')
 
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue
@@ -48,8 +111,12 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
         y: 38, ease: 'none',
         scrollTrigger: { trigger: root.querySelector('.hero'), start: 'top top', end: 'bottom top', scrub: true },
       })
+      return finishIntro
     })
-    return () => motion.revert()
+    return () => {
+      title?.dispose()
+      motion.revert()
+    }
   }, [scope])
 }
 
