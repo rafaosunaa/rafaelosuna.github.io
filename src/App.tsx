@@ -39,19 +39,30 @@ function Header() {
 
 function Hero() {
   const { t } = useLanguage()
-  return <section className="hero shell" id="inicio" aria-labelledby="hero-title">
-    <div className="hero-main">
-      <div className="hero-copy">
+  return <section className="hero" id="inicio" aria-labelledby="hero-title">
+    <div className="shell">
+      <div className="hero-title">
         <p className="eyebrow hero-kicker"><span className="section-mark"/>{t(personal.disciplines)}</p>
-        <h1 id="hero-title">{personal.headline.map(line => <span className="hero-line" key={line}><span>{line}</span></span>)}</h1>
-        <p className="hero-role">{t(personal.role)}</p>
-        <p className="hero-tagline">{t(personal.tagline)}</p>
-        <a className="scroll-link" href="#proyectos">
-          {t('Explorar proyectos')}
-          <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
-        </a>
+        <h1 id="hero-title" aria-label={personal.name}>{personal.headline.map(line => (
+          <span className="hero-line" key={line} aria-hidden="true"><span>{line}</span></span>
+        ))}</h1>
       </div>
-      <Orbit location={t(personal.location)}/>
+      <div className="hero-main">
+        <div className="hero-copy">
+          <p className="hero-role">{t(personal.role)}</p>
+          <p className="hero-tagline">{t(personal.tagline)}</p>
+          <a className="scroll-link" href="#proyectos">
+            {t('Explorar proyectos')}
+            <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
+          </a>
+        </div>
+        <Orbit location={t(personal.location)}/>
+      </div>
+      <nav className="hero-index" aria-label={t('Índice de secciones')}>
+        {navigation.map(([label, href]) => (
+          <a key={href} href={href}><span>{t(label)}</span></a>
+        ))}
+      </nav>
     </div>
   </section>
 }

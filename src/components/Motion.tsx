@@ -25,8 +25,12 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
           .set(intro, { visibility: 'hidden' })
       }
       timeline.from(root.querySelectorAll('.hero-line > span'), {
-        yPercent: 104, duration: .78, ease: 'power4.out', stagger: .08, clearProps: 'transform',
-      }, timeline.duration() ? '-=.34' : 0)
+        yPercent: 62, scaleY: .24, opacity: 0, transformOrigin: 'bottom', duration: .78,
+        ease: 'power4.out', stagger: .11, clearProps: 'transform,transformOrigin,opacity',
+      }, timeline.duration() ? '-=.22' : 0)
+      timeline.from(root.querySelectorAll('.hero-copy, .orbit-panel'), {
+        y: 16, opacity: 0, duration: .55, ease: 'power2.out', stagger: .08, clearProps: 'transform,opacity',
+      }, '-=.37')
 
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue

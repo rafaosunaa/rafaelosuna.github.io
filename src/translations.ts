@@ -1,4 +1,5 @@
 const rows = [
+['Índice de secciones','Section index','Index des sections'],
 ['Pausar animación','Pause animation','Mettre en pause'],
 ['Activar animación','Play animation','Activer l’animation'],
 ['Proyectos','Projects','Projets'],
