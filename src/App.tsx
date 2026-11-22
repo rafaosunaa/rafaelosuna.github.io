@@ -74,15 +74,17 @@ function DownloadCV() {
 
 function About() {
   const { t } = useLanguage()
-  return <section id="sobre-mi" className="about shell" aria-labelledby="about-title">
-    <p className="eyebrow"><span className="section-mark"/> {t('Sobre mí')}</p>
-    <div className="about-grid" data-reveal>
-      <h2 id="about-title">{t(personal.aboutHeadline)}</h2>
-      <div className="about-copy">
-        {personal.photo && <img className="portrait" src={assetUrl(personal.photo)} alt={personal.name} loading="lazy" />}
-        <p>{t(personal.bio)}</p>
-        <ul className="tags">{personal.interests.map(interest => <li key={interest}>{t(interest)}</li>)}</ul>
-        <div className="link-row"><DownloadCV/></div>
+  return <section id="sobre-mi" className="about" aria-labelledby="about-title">
+    <div className="shell">
+      <p className="eyebrow"><span className="section-mark"/> {t('Sobre mí')}</p>
+      <div className="about-grid" data-reveal>
+        <h2 id="about-title">{t(personal.aboutHeadline)}</h2>
+        <div className="about-copy">
+          {personal.photo && <img className="portrait" src={assetUrl(personal.photo)} alt={personal.name} loading="lazy" />}
+          <p>{t(personal.bio)}</p>
+          <ul className="tags">{personal.interests.map(interest => <li key={interest}>{t(interest)}</li>)}</ul>
+          <div className="link-row"><DownloadCV/></div>
+        </div>
       </div>
     </div>
   </section>

@@ -5,6 +5,7 @@ import { CirclePlus, CodeXml, FileText, GitFork, Play, Search, X } from 'lucide-
 import { categories, projects } from '../data/projects'
 import type { Category, Project } from '../data/projects'
 import { ProjectArtwork } from './Artwork'
+import { PaperFold } from './PaperFold'
 
 const filters = ['Todos', ...categories] as const
 const featured = projects.filter(project => project.featured)
@@ -68,13 +69,16 @@ export function Projects() {
           {featured.map(project => (
             <article key={project.id} className="project">
               <button type="button" className="project-trigger" aria-label={`${t("Ver destacado")}: ${t(project.title)}`} onClick={event => openProject(project, event.currentTarget)}>
-                <div className="art-wrap">
+                <span className="art-wrap">
                   <Media project={project} />
+                  <PaperFold/>
                   {!project.image && <span className="art-caption">{t('Ilustración conceptual')}</span>}
                   <span className="project-open" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
-                </div>
-                <ProjectMeta project={project}/>
-                <span className="project-name">{t(project.title)}</span>
+                </span>
+                <span className="project-label">
+                  <ProjectMeta project={project}/>
+                  <span className="project-name">{t(project.title)}</span>
+                </span>
               </button>
             </article>
           ))}
