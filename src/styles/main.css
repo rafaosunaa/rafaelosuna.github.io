@@ -47,13 +47,40 @@ button { cursor: pointer; }
 .skip-link:focus { transform: translateY(0); }
 
 .ink-filter { position: absolute; pointer-events: none; }
-.ink-control {
-  --control-ripple-ink: var(--folio-ink);
-  position: relative;
-  border-radius: 999px;
+.ink-control, .language-select {
+  border: 1px solid #b7a98f;
+  border-radius: 3px 5px 4px 2px;
+  color: var(--deep-ink);
+  background: linear-gradient(163deg, #fffaf0, #f4e9d0);
+  box-shadow: inset 0 1px #fffaf0, 0 2px #b4a287, 0 4px 7px #102e5424;
+  transition: background-color .24s, border-color .24s, box-shadow .2s, translate .2s var(--motion), transform .3s var(--motion);
+}
+.ink-control { --control-ripple-ink: var(--folio-ink); position: relative; }
+:is(.ink-control, .language-select):is(:hover,:focus-visible),
+:is(.project-trigger, .catalog-entry):is(:hover,:focus-visible) .ink-control {
+  border-color: #8f7f65;
+  box-shadow: inset 0 1px #fffaf0, 0 2px #9f8b6d, 0 5px 9px #102e5438;
+}
+:is(.ink-control, .language-select):active,
+:is(.project-trigger, .catalog-entry):active .ink-control {
+  translate: 0 2px;
+  box-shadow: inset 0 1px 3px #8f7f653d, 0 1px 2px #102e541a;
+}
+.dark-section :is(a.ink-control, button.ink-control):focus-visible { outline-color: var(--folio-paper); }
+.dark-section .project-dialog .ink-control:focus-visible { outline-color: var(--folio-ink); }
+
+:is(.scroll-link, .pill.ink-control)::before {
+  content: '';
+  position: absolute;
+  inline-size: 8px;
+  block-size: 8px;
+  inset: 0 0 auto auto;
+  background: linear-gradient(45deg, #cfbea2 49%, #fffaf0 52%);
+  border-top-right-radius: inherit;
+  pointer-events: none;
 }
 .dark-section .ink-control { --control-ripple-ink: var(--folio-paper); }
-.dark-section :is(.dialog-close, .project-open) { --control-ripple-ink: var(--folio-ink); }
+.dark-section :is(.project-dialog .ink-control, .project-open) { --control-ripple-ink: var(--folio-ink); }
 .catalog-entry:is(:hover, :focus-visible) .catalog-open { --control-ripple-ink: var(--folio-ink); }
 
 .ink-control::after {
@@ -80,17 +107,15 @@ button { cursor: pointer; }
 .brand { display: grid; place-items: center; min-height: 2.75rem; }
 .brand img { display: block; width: 3.3rem; height: auto; }
 .main-nav { display: flex; align-items: center; gap: clamp(.4rem, .9vw, .95rem); }
-.main-nav a, .footer-bar a { text-decoration: none; color: inherit; }
+.main-nav a, .footer-bar a { text-decoration: none; }
+.footer-bar a { color: inherit; }
 .main-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
   padding: .35rem .7rem;
-  border: 1px solid var(--folio-rule);
   font: 500 .84rem var(--folio-mono);
-  transition: background .24s, color .24s, border-color .24s;
 }
-.main-nav a:hover, .main-nav a:focus-visible { background: var(--folio-ink); color: var(--folio-paper); border-color: var(--folio-ink); }
 .menu-toggle { display: none; }
 
 .hero, .about, .resume { position: relative; isolation: isolate; }
@@ -175,15 +200,12 @@ button { cursor: pointer; }
   gap: 1rem;
   min-height: 3rem;
   margin-top: clamp(1.15rem, 2.1vw, 2rem);
-  padding: .65rem .8rem .65rem .9rem;
-  border: 1px solid var(--folio-ink);
-  background: var(--folio-ink);
-  color: var(--folio-paper);
+  padding: .65rem 1.1rem .65rem .9rem;
   text-decoration: none;
-  font: 600 .88rem var(--folio-mono);
-  transition: background .24s, color .24s;
+  font: 650 .88rem var(--folio-mono);
+  background: linear-gradient(163deg, #fff5db, #ead8ad);
+  border-color: #a89470;
 }
-.scroll-link:hover { background: transparent; color: var(--folio-ink); }
 .scroll-icon { flex-shrink: 0; transition: transform .24s var(--motion); }
 .scroll-link:hover .scroll-icon { transform: translateY(2px); }
 .location { display: inline-flex; align-items: center; gap: .4rem; font: 400 .79rem var(--folio-mono); }
@@ -207,7 +229,7 @@ button { cursor: pointer; }
   transition: background .25s, color .25s;
 }
 .hero-index a:hover, .hero-index a:focus-visible { background: var(--folio-ink); color: var(--folio-paper); }
-[data-magnetic] { transform: translate(var(--shift-x, 0px), var(--shift-y, 0px)); transition: transform .3s var(--motion), background .25s, color .25s; }
+[data-magnetic] { transform: translate(var(--shift-x, 0px), var(--shift-y, 0px)); }
 
 .work, .about, .resume, .contact { position: relative; isolation: isolate; }
 .work, .resume { --edge-source: var(--folio-paper); }
@@ -241,14 +263,15 @@ button { cursor: pointer; }
 .work h2, .resume h2, .contact h2 { margin: 0; font-size: clamp(3.5rem, 8vw, 9rem); }
 .filters { display: flex; flex-wrap: wrap; gap: .42rem; }
 .filters button {
-  border: 1px solid var(--inverse-rule);
   padding: .55rem .74rem;
   min-height: 2.75rem;
   font: 500 .85rem var(--folio-mono);
-  transition: background .22s, color .22s, border-color .22s;
 }
-.filters button:hover { border-color: var(--folio-paper); }
-.filters button[aria-pressed="true"] { background: var(--folio-paper); color: var(--deep-ink); border-color: var(--folio-paper); }
+.filters button[aria-pressed="true"] {
+  background: #e3edf6;
+  border-color: #8babc7;
+  box-shadow: inset 0 -3px #5f86ad, 0 2px 4px #102e5438;
+}
 .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); border-top: 1px solid var(--inverse-rule); border-left: 1px solid var(--inverse-rule); }
 .project { border-right: 1px solid var(--inverse-rule); border-bottom: 1px solid var(--inverse-rule); }
 .project-trigger { display: grid; grid-template-rows: auto 1fr; width: 100%; height: 100%; text-align: left; }
@@ -270,7 +293,6 @@ button { cursor: pointer; }
 .project-trigger:hover :is(.art-drawing, .project-image), .project-trigger:focus-visible :is(.art-drawing, .project-image) { transform: scale(1.07); }
 .art-caption { position: absolute; z-index: 3; left: .75rem; bottom: .65rem; padding: .28rem .44rem; background: var(--folio-paper); color: var(--folio-ink); border: 1px solid var(--folio-rule); font: 400 .77rem var(--folio-mono); }
 .project-open { position: absolute; z-index: 3; right: .65rem; top: .65rem; background: var(--folio-paper); color: var(--folio-ink); width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border: 1px solid var(--folio-rule); transition: background .25s, color .25s; }
-.project-trigger:hover .project-open, .project-trigger:focus-visible .project-open { background: var(--folio-ink); color: var(--folio-paper); }
 .project-label { display: block; padding: .85rem .9rem 1rem; border-top: 1px solid var(--inverse-rule); }
 .project-meta { display: block; font: 400 .79rem/1.45 var(--folio-mono); color: var(--inverse-muted); margin-bottom: .23rem; }
 .project-name { display: block; font-size: clamp(1.37rem, 2.35vw, 2.4rem); font-weight: 570; line-height: 1.1; letter-spacing: -.027em; }
@@ -284,8 +306,7 @@ button { cursor: pointer; }
 .dialog-content { position: relative; }
 .dialog-art { position: relative; aspect-ratio: 640/300; overflow: hidden; background: var(--paper-secondary); }
 .dialog-art .project-image { object-fit: contain; padding: .7rem .7rem 2.2rem; }
-.dialog-close { position: absolute; z-index: 4; right: .75rem; top: .75rem; display: grid; place-items: center; min-width: 2.75rem; min-height: 2.75rem; background: var(--folio-paper); border: 1px solid var(--folio-rule); }
-.dialog-close:hover { background: var(--light-ink); }
+.dialog-close { position: absolute; z-index: 4; right: .75rem; top: .75rem; display: grid; place-items: center; min-width: 2.75rem; min-height: 2.75rem; }
 .dialog-body { padding: clamp(1rem, 4vw, 2.4rem); }
 .dialog-body h3 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin: .35rem 0 .85rem; }
 .dialog-body p:not(.eyebrow) { color: var(--muted); }
@@ -310,13 +331,8 @@ button { cursor: pointer; }
   justify-content: center;
   gap: .5rem;
   font: 500 .86rem var(--folio-mono);
-  border: 1px solid var(--folio-rule);
-  padding: .55rem .75rem;
-  transition: background .25s, color .25s, transform .3s var(--motion);
+  padding: .55rem 1.1rem .55rem .75rem;
 }
-.pill:hover { background: var(--folio-ink); color: var(--folio-paper); }
-.dark-section .pill { border-color: var(--inverse-rule); }
-.dark-section .pill:hover { background: var(--folio-paper); color: var(--deep-ink); }
 
 .resume { background: var(--paper-secondary); }
 .resume h2, .contact h2 { margin-top: .68rem; }
@@ -359,8 +375,7 @@ button { cursor: pointer; }
 .contact .email-line { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; margin-top: 1.4rem; border-top: 1px solid var(--inverse-rule); padding-top: 1.15rem; }
 .email { font-size: clamp(1.15rem, 2.5vw, 2.5rem); text-underline-offset: .16em; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .email:hover { color: var(--light-ink); }
-.copy-button { width: 2.75rem; height: 2.75rem; border: 1px solid var(--inverse-rule); display: grid; place-items: center; }
-.copy-button:hover { color: var(--deep-ink); background: var(--folio-paper); }
+.copy-button { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; }
 .copy-status { color: var(--inverse-muted); min-height: 1.2rem; font: 400 .83rem var(--folio-mono); margin-top: .45rem; }
 .contact .link-row { margin-top: .45rem; }
 .footer-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.4rem; flex-wrap: wrap; margin-top: clamp(2.8rem, 6vw, 6rem); border-top: 1px solid var(--inverse-rule); padding: 1.25rem 0; color: var(--inverse-muted); font: 400 .82rem var(--folio-mono); }
@@ -369,10 +384,10 @@ button { cursor: pointer; }
 @media (max-width: 700px) {
   .header-inner { height: 4.2rem; }
   [id] { scroll-margin-top: 5.2rem; }
-  .menu-toggle { display: flex; align-items: center; gap: .35rem; padding: .55rem .7rem; border: 1px solid var(--folio-rule); min-height: 2.75rem; font-family: var(--folio-mono); font-size: .85rem; }
-  .main-nav { position: absolute; top: 100%; inset-inline: 0; display: grid; gap: .05rem; padding: .8rem var(--pad) 1rem; background: var(--folio-paper); border-bottom: 1px solid var(--folio-rule); transform: translateY(-.4rem); opacity: 0; visibility: hidden; transition: opacity .26s, visibility .26s, transform .26s var(--motion); }
+  .menu-toggle { display: flex; align-items: center; gap: .35rem; padding: .55rem .7rem; min-height: 2.75rem; font-family: var(--folio-mono); font-size: .85rem; }
+  .main-nav { position: absolute; top: 100%; inset-inline: 0; display: grid; gap: .5rem; padding: .8rem var(--pad) 1rem; background: var(--folio-paper); border-bottom: 1px solid var(--folio-rule); transform: translateY(-.4rem); opacity: 0; visibility: hidden; transition: opacity .26s, visibility .26s, transform .26s var(--motion); }
   .main-nav.is-open { visibility: visible; opacity: 1; transform: none; }
-  .main-nav a { font-size: .95rem; border: 0; }
+  .main-nav a { font-size: .95rem; }
   .hero { padding-block: 2.2rem 2rem; }
   .hero h1 { font-size: clamp(2.7rem, 15.9cqi, 7rem); }
   .hero-name { display: block; }
@@ -408,9 +423,7 @@ button { cursor: pointer; }
   width: 2.65rem;
   height: 2.65rem;
   flex: none;
-  border: 1px solid var(--inverse-rule);
 }
-.catalog-entry:is(:hover,:focus-visible) .catalog-open { border-color: var(--folio-rule); }
 .catalog-name { display: block; font-size: clamp(1.08rem, 1.85vw, 1.56rem); line-height: 1.16; font-weight: 570; letter-spacing: -.02em; }
 .catalog-entry:is(:hover,:focus-visible) { background: var(--folio-paper); color: var(--deep-ink); outline-offset: -4px; }
 .catalog-entry:is(:hover,:focus-visible) .project-meta { color: var(--muted); }
@@ -423,7 +436,7 @@ button { cursor: pointer; }
 }
 
 .header-controls { display: flex; align-items: center; gap: clamp(.65rem, 2vw, 2rem); }
-.language-select { min-height: 2.75rem; padding: .35rem .6rem; border: 1px solid var(--folio-rule); border-radius: 999px; color: var(--folio-ink); background: var(--folio-paper); font: 500 .82rem var(--folio-mono); }
+.language-select { min-height: 2.75rem; padding: .35rem .6rem; font: 500 .82rem var(--folio-mono); }
 
 .orbital svg { display: block; width: 100%; height: auto; aspect-ratio: 500 / 475; }
 
@@ -433,13 +446,8 @@ button { cursor: pointer; }
   gap: .35rem;
   min-height: 2.75rem;
   padding: .4rem .7rem;
-  border: 1px solid var(--folio-rule);
-  background: transparent;
-  color: var(--folio-ink);
   font: 500 .78rem var(--folio-mono);
 }
-
-.orbit-toggle:hover { border-color: var(--folio-rule); }
 
 .orbit-controls {
   position: relative;
