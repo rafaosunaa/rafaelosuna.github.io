@@ -241,3 +241,18 @@ button { cursor: pointer; }
 
 .header-controls { display: flex; align-items: center; gap: clamp(.65rem, 2vw, 2rem); }
 .language-select { min-height: 2.55rem; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: .5rem; color: var(--ink); background: var(--paper); font-size: .9rem; }
+
+.orbital svg { display: block; width: 100%; height: auto; aspect-ratio: 500 / 475; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .planet-mesh, .planet-satellite {
+    transform-origin: 250px 238px;
+    animation: planet-turn 15s linear infinite;
+  }
+
+  .planet-satellite { animation-duration: 6s; }
+
+  @keyframes planet-turn {
+    to { transform: rotate(1turn); }
+  }
+}
