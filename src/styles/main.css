@@ -77,9 +77,8 @@ button { cursor: pointer; }
 .site-header { position: sticky; z-index: 10; top: 0; background: var(--folio-paper); color: var(--folio-ink); }
 .header-inner { position: relative; min-height: 4.9rem; display: flex; align-items: center; justify-content: space-between; }
 .header-inner::after { content: ''; position: absolute; height: 1px; bottom: 0; inset-inline: var(--pad); background: var(--folio-rule); }
-.site-header .brand span { color: inherit; }
-.brand { display: inline-flex; align-items: baseline; gap: .03em; letter-spacing: -.09em; font-size: 2.36rem; line-height: .95; font-weight: 740; text-decoration: none; }
-.brand span { color: var(--muted); }
+.brand { display: grid; place-items: center; min-height: 2.75rem; }
+.brand img { display: block; width: 3.3rem; height: auto; }
 .main-nav { display: flex; align-items: center; gap: clamp(.4rem, .9vw, .95rem); }
 .main-nav a, .footer-bar a { text-decoration: none; color: inherit; }
 .main-nav a {

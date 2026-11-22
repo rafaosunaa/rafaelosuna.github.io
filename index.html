@@ -29,14 +29,8 @@
         justify-content: center;
         transform: translateY(-50%);
       }
-      .intro-brand {
-        display: inline-flex;
-        align-items: baseline;
-        gap: .03em;
-        color: #174478;
-        font: 740 clamp(6rem, 18vmin, 12rem)/.95 'Inter Tight Variable', Inter, system-ui, sans-serif;
-        letter-spacing: -.09em;
-      }
+      .intro-brand { width: clamp(8rem, 22vmin, 15rem); }
+      .intro-brand img { display: block; width: 100%; height: auto; }
       .intro-ring {
         position: absolute;
         top: 73%;
@@ -54,6 +48,7 @@
         stroke-dashoffset: 100;
       }
       html[data-preloading] .intro-brand { animation: intro-arrive .58s cubic-bezier(.22,.68,.23,1) backwards; }
+      html[data-preloading] .intro-brand img { animation: intro-inflate .82s cubic-bezier(.2,.7,.25,1) both; }
       html[data-preloading] .intro-ring { animation: intro-arrive .54s .12s cubic-bezier(.22,.68,.23,1) backwards; }
       html[data-preloading] .intro-progress { animation: intro-trace .85s .18s ease-out both; }
       @keyframes intro-arrive {
@@ -61,13 +56,20 @@
         to { opacity: 1; translate: 0 0; }
       }
       @keyframes intro-trace { to { stroke-dashoffset: 23; } }
+      @keyframes intro-inflate {
+        from { scale: .82 .62; filter: brightness(.82); }
+        68% { scale: 1.05 1.09; filter: brightness(1.04); }
+        to { scale: 1; filter: brightness(1); }
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <div class="intro" aria-hidden="true">
       <div class="intro-sheet"></div>
-      <div class="intro-brand-slot"><div class="intro-brand">ro<span>.</span></div></div>
+      <div class="intro-brand-slot">
+        <div class="intro-brand"><img src="/logo-inflated.webp" width="600" height="290" alt="ro." fetchpriority="high"></div>
+      </div>
       <svg class="intro-ring" viewBox="0 0 48 48" focusable="false">
         <circle class="intro-track" cx="24" cy="24" r="20"></circle>
         <circle class="intro-progress" cx="24" cy="24" r="20" pathLength="100" transform="rotate(-90 24 24)"></circle>

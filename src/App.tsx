@@ -24,7 +24,9 @@ function Header() {
     }
   }}>
     <div className="shell header-inner">
-      <a className="brand" href="#inicio" aria-label={`Rafael Osuna Ventura · ${t("Inicio")}`}>ro<span>.</span></a>
+      <a className="brand" href="#inicio" aria-label={`Rafael Osuna Ventura · ${t("Inicio")}`}>
+        <img src={assetUrl('logo-inflated.webp')} width="600" height="290" alt="ro."/>
+      </a>
       <div className="header-controls">
         <button className="menu-toggle ink-control" ref={opener} type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="navigation">
           {open ? <X size={20}/> : <Menu size={20}/>}<span>{t(open ? 'Cerrar' : 'Menú')}</span>

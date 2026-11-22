@@ -9,8 +9,9 @@ export function animatePreloader(root: HTMLElement) {
   const mark = document.querySelector<HTMLElement>('.intro-brand')
   const ring = document.querySelector<SVGSVGElement>('.intro-ring')
   const progress = ring?.querySelector<SVGCircleElement>('.intro-progress')
-  const headerMark = root.querySelector<HTMLElement>('.site-header .brand')
-  if (!sheet || !mark || !ring || !progress || !headerMark || scrollY > 40) {
+  const markImage = mark?.querySelector('img')
+  const headerMark = root.querySelector<HTMLImageElement>('.site-header .brand img')
+  if (!sheet || !mark || !markImage || !ring || !progress || !headerMark || scrollY > 40) {
     finish()
     return
   }
@@ -44,10 +45,11 @@ export function animatePreloader(root: HTMLElement) {
       }, .67)
   }
 
-  // Give the hero fonts time to settle while the ring traces its first arc.
+  // Give the logo and hero fonts time to settle while the ring traces its first arc.
   const trace = progress.getAnimations()[0]?.finished.catch(() => undefined)
+  const artwork = markImage.decode().catch(() => undefined)
   const fontDeadline = window.setTimeout(reveal, 1600)
-  void Promise.all([trace, document.fonts.ready]).then(reveal, reveal)
+  void Promise.all([trace, artwork, document.fonts.ready]).then(reveal, reveal)
 
   return () => {
     disposed = true
