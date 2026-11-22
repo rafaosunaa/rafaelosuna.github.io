@@ -48,7 +48,7 @@ button { cursor: pointer; }
 .skip-link { position: fixed; z-index: 110; top: .75rem; left: .75rem; transform: translateY(-150%); padding: .8rem 1rem; background: var(--light-ink); color: var(--folio-ink); border-radius: .4rem; }
 .skip-link:focus { transform: translateY(0); }
 
-.paper-control, .language-select {
+.paper-control, .language-select, .project-open {
   border: 1px solid #b7a98f;
   border-radius: 3px 5px 4px 2px;
   color: var(--deep-ink);
@@ -247,13 +247,10 @@ button { cursor: pointer; }
 .art-blueprint, .art-network, .art-connect { background: radial-gradient(ellipse at 52% 38%, #f0f3ee, #d5e0e7 100%); }
 .art-solar { background: radial-gradient(ellipse at 56% 48%, #f5f3e7, #dce6ea 100%); }
 .art-caption { position: absolute; z-index: 3; left: .75rem; bottom: .65rem; padding: .28rem .44rem; background: var(--folio-paper); color: var(--folio-ink); border: 1px solid var(--folio-rule); font: 400 .84rem var(--folio-mono); }
-.project-open { position: absolute; z-index: 3; right: .65rem; top: .65rem; background: var(--folio-paper); color: var(--folio-ink); width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border: 1px solid var(--folio-rule); transition: background .25s, color .25s; }
+.project-open { position: absolute; z-index: 3; right: .65rem; top: .65rem; background: var(--folio-paper); color: var(--folio-ink); width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border: 1px solid var(--folio-rule); }
 .project-label { display: block; padding: .85rem .9rem 1rem; border-top: 1px solid var(--inverse-rule); }
 .project-meta { display: block; font: 400 .86rem/1.45 var(--folio-mono); color: var(--inverse-muted); margin-bottom: .23rem; }
 .project-name { display: block; font-size: clamp(1.37rem, 2.35vw, 2.4rem); font-weight: 570; line-height: 1.1; letter-spacing: -.027em; }
-.cursor-ring { display: none; position: fixed; z-index: 19; top: 0; left: 0; pointer-events: none; }
-.cursor-ring::before { content: ''; display: block; translate: -50% -50%; width: 2.8rem; height: 2.8rem; border: 1px solid #174478; border-radius: 50%; background: #17447821; }
-@media (hover:hover) and (pointer:fine) { .cursor-ring.visible { display: block; } }
 .project-dialog { position: fixed; inset: 0; margin: auto; width: min(43rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); border: 1px solid var(--folio-rule); padding: 0; color: var(--folio-ink); background: var(--folio-paper); overscroll-behavior: contain; }
 .project-dialog::backdrop { background: #102e54dc; }
 .project-dialog[open] { animation: dialog-in .35s var(--motion) both; }
@@ -395,24 +392,7 @@ button { cursor: pointer; }
 
 .orbital svg { display: block; width: 100%; height: auto; aspect-ratio: 500 / 475; }
 
-.orbit-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  min-height: 2.75rem;
-  padding: .4rem .7rem;
-  font: 500 .85rem var(--folio-mono);
-}
-
-.orbit-controls {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: .2rem .5rem;
-  padding-top: .2rem;
-}
+.orbit-location { padding-top: .2rem; }
 
 .orbit-scene,
 .orbit-cross,
@@ -420,11 +400,6 @@ button { cursor: pointer; }
   animation-duration: var(--orbit-duration);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  animation-play-state: paused;
-}
-
-.orbit-panel[data-playing="true"] :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
-  animation-play-state: running;
 }
 
 .orbital svg > [class] { transform-origin: 250px 238px; }
@@ -493,7 +468,7 @@ button { cursor: pointer; }
 .hero-index a:is(:hover, :focus-visible) .idx { color: var(--hot-light); }
 
 .project-name { text-decoration: underline transparent 2px; text-underline-offset: .14em; transition: text-decoration-color .25s; }
-.project-trigger:is(:hover, :focus-visible) .project-name { text-decoration-color: var(--hot-light); }
+.project-label:hover .project-name, .project-trigger:focus-visible .project-name { text-decoration-color: var(--hot-light); }
 
 .email { font-weight: 560; text-decoration-color: var(--hot-light); text-decoration-thickness: 2px; }
 

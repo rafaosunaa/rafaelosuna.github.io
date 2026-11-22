@@ -182,6 +182,5 @@ export default function App() {
       <Resume/>
     </main>
     <Contact/>
-    <div className="cursor-ring" aria-hidden="true"/>
   </div>
 }

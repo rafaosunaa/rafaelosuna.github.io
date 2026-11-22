@@ -111,14 +111,12 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     const root = scope.current
     const pointer = matchMedia('(hover: hover) and (pointer: fine)')
     if (!root) return
-    const cursor = root.querySelector<HTMLElement>('.cursor-ring')
     let active: HTMLElement | null = null
 
     function reset() {
       active?.style.removeProperty('--shift-x')
       active?.style.removeProperty('--shift-y')
       active = null
-      cursor?.classList.remove('visible')
     }
 
     function move(event: PointerEvent) {
@@ -135,8 +133,6 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
         target.style.setProperty('--shift-x', `${x * 14}px`)
         target.style.setProperty('--shift-y', `${y * 14}px`)
       }
-      cursor?.classList.toggle('visible', Boolean(event.target.closest('.art-wrap')))
-      if (cursor) cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`
     }
 
     root.addEventListener('pointermove', move)

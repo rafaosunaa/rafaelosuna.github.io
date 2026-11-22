@@ -1,34 +1,9 @@
-import { useState } from 'react'
-import { MapPin, Pause, Play } from 'lucide-react'
-import { useLanguage } from '../language'
+import { MapPin } from 'lucide-react'
 import orbital from './orbital.svg?raw'
 
-const storageKey = 'portfolio-orbit-motion'
-
-function initialPlayback() {
-  try {
-    return localStorage.getItem(storageKey) !== 'pause'
-  } catch {
-    return true
-  }
-}
-
 export function Orbit({ location }: { location: string }) {
-  const { t } = useLanguage()
-  const [playing, setPlaying] = useState(initialPlayback)
-
-  function toggleAnimation() {
-    const next = !playing
-    setPlaying(next)
-    try {
-      localStorage.setItem(storageKey, next ? 'play' : 'pause')
-    } catch {
-      // Keep the selection for the current visit.
-    }
-  }
-
   return (
-    <div className="orbit-panel" data-playing={playing}>
+    <div className="orbit-panel">
       <div className="orbit-visual" aria-hidden="true">
         <div className="orbits-float">
           <div className="orbit-scene">
@@ -38,12 +13,8 @@ export function Orbit({ location }: { location: string }) {
           </div>
         </div>
       </div>
-      <div className="orbit-controls">
+      <div className="orbit-location">
         <span className="location"><MapPin size={15} aria-hidden="true"/>{location}</span>
-        <button className="orbit-toggle paper-control" type="button" onClick={toggleAnimation}>
-          {playing ? <Pause size={15} aria-hidden="true"/> : <Play size={15} aria-hidden="true"/>}
-          {t(playing ? 'Pausar animación' : 'Activar animación')}
-        </button>
       </div>
     </div>
   )

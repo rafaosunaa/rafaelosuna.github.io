@@ -73,7 +73,7 @@ export function Projects() {
                 <span className="art-wrap">
                   <Media project={project} />
                   {!project.image && <span className="art-caption">{t('Ilustración conceptual')}</span>}
-                  <span className="project-open paper-control" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
+                  <span className="project-open" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
                 </span>
                 <span className="project-label">
                   <ProjectMeta project={project}/>
