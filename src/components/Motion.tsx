@@ -59,6 +59,31 @@ function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
   }
 }
 
+function animateSectionEdges(root: HTMLElement) {
+  for (const edge of root.querySelectorAll('.section-edge')) {
+    const contour = gsap.timeline({
+      scrollTrigger: { trigger: edge, start: 'top 92%', end: 'bottom 35%', scrub: .36 },
+    })
+    edge.querySelectorAll<SVGPathElement>('[data-edge-peak]').forEach((path, index) => {
+      const rest = path.getAttribute('d')
+      const peak = path.dataset.edgePeak
+      if (!rest || !peak) return
+      const start = index * .09
+      contour.to(path, { attr: { d: peak }, duration: .6, ease: 'power1.inOut' }, start)
+        .to(path, { attr: { d: rest }, duration: .65, ease: 'power1.inOut' }, start + .6)
+    })
+  }
+
+  for (const sheet of root.querySelectorAll<HTMLElement>('.project-reveal')) {
+    if (sheet.getBoundingClientRect().top <= innerHeight) continue
+    gsap.fromTo(sheet, { visibility: 'visible', clipPath: 'inset(0 0 0 0)' }, {
+      clipPath: 'inset(0 0 0 100%)', duration: .8, ease: 'power3.inOut',
+      clearProps: 'clipPath,visibility',
+      scrollTrigger: { trigger: sheet, start: 'top 86%', once: true },
+    })
+  }
+}
+
 export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const root = scope.current
@@ -100,6 +125,8 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
         y: 16, opacity: 0, duration: .55, ease: 'power2.out', stagger: .08, clearProps: 'transform,opacity',
       }, '+=.76')
 
+      animateSectionEdges(root)
+
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue
         gsap.from(item, {
@@ -126,6 +153,27 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     const pointer = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)')
     if (!root) return
     const cursor = root.querySelector<HTMLElement>('.cursor-ring')
+    const ripple = root.querySelector('#control-ripple feDisplacementMap')
+    const allowRipple = matchMedia('(prefers-reduced-motion: no-preference)')
+    let rippleAnimation: gsap.core.Timeline | undefined
+
+    function rippleControl(event: PointerEvent | FocusEvent) {
+      if (!ripple || !allowRipple.matches || !(event.target instanceof Element)) return
+      const control = event.target.closest('.project-trigger, .catalog-entry') ?? event.target.closest('.ink-control')
+      if (!control) return
+
+      if (event.type === 'pointerover' && (
+        !pointer.matches || (event instanceof PointerEvent && event.pointerType !== 'mouse') ||
+        (event.relatedTarget instanceof Node && control.contains(event.relatedTarget))
+      )) return
+      if (event.type === 'focusin' && !control.matches(':focus-visible')) return
+
+      rippleAnimation?.kill()
+      rippleAnimation = gsap.timeline()
+        .fromTo(ripple, { attr: { scale: 0 } }, { attr: { scale: 15 }, duration: .23, ease: 'power2.out' })
+        .to(ripple, { attr: { scale: 0 }, duration: .56, ease: 'power2.out' })
+    }
+
     let active: HTMLElement | null = null
 
     function reset() {
@@ -154,11 +202,17 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     }
 
     root.addEventListener('pointermove', move)
+    root.addEventListener('pointerover', rippleControl)
+    root.addEventListener('focusin', rippleControl)
     root.addEventListener('pointerleave', reset)
     root.addEventListener('click', reset)
     pointer.addEventListener('change', reset)
     return () => {
+      rippleAnimation?.kill()
+      ripple?.setAttribute('scale', '0')
       root.removeEventListener('pointermove', move)
+      root.removeEventListener('pointerover', rippleControl)
+      root.removeEventListener('focusin', rippleControl)
       root.removeEventListener('pointerleave', reset)
       root.removeEventListener('click', reset)
       pointer.removeEventListener('change', reset)

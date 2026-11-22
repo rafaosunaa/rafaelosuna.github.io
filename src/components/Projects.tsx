@@ -6,6 +6,7 @@ import { categories, projects } from '../data/projects'
 import type { Category, Project } from '../data/projects'
 import { ProjectArtwork } from './Artwork'
 import { PaperFold } from './PaperFold'
+import { SectionEdge } from './SectionEdge'
 
 const filters = ['Todos', ...categories] as const
 const featured = projects.filter(project => project.featured)
@@ -59,11 +60,12 @@ export function Projects() {
 
   return (
     <section className="work dark-section" id="proyectos" aria-labelledby="work-title">
+      <SectionEdge layered/>
       <div className="shell">
         <p className="eyebrow"><span className="section-mark"/> {t('Portafolio')}</p>
         <div className="work-heading">
           <h2 id="work-title">{t('Proyectos')}<span className="accent">.</span></h2>
-          <a href="#catalogo" className="pill" data-magnetic>{t('Ver todos los proyectos')}</a>
+          <a href="#catalogo" className="pill ink-control" data-magnetic>{t('Ver todos los proyectos')}</a>
         </div>
         <div className="work-grid" aria-label={t('Proyectos destacados')}>
           {featured.map(project => (
@@ -72,8 +74,9 @@ export function Projects() {
                 <span className="art-wrap">
                   <Media project={project} />
                   <PaperFold/>
+                  <span className="project-reveal" aria-hidden="true"/>
                   {!project.image && <span className="art-caption">{t('Ilustración conceptual')}</span>}
-                  <span className="project-open" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
+                  <span className="project-open ink-control" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
                 </span>
                 <span className="project-label">
                   <ProjectMeta project={project}/>
@@ -93,7 +96,7 @@ export function Projects() {
             </label>
           </div>
           <div className="filters" role="group" aria-label={t('Filtrar proyectos')}>
-            {filters.map(filter => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => setCategory(filter)}>{t(filter)}</button>)}
+            {filters.map(filter => <button type="button" className="ink-control" key={filter} aria-pressed={category === filter} onClick={() => setCategory(filter)}>{t(filter)}</button>)}
           </div>
           <p className="catalog-count" role="status">{visible.length} {t(visible.length === 1 ? 'proyecto' : 'proyectos')}</p>
           {visible.length > 0 ? <ul className="catalog-list">
@@ -103,18 +106,18 @@ export function Projects() {
                   <ProjectMeta project={project}/>
                   <span className="catalog-name">{t(project.title)}</span>
                 </span>
-                <CirclePlus size={22} strokeWidth={1.4} aria-hidden="true"/>
+                <span className="catalog-open ink-control" aria-hidden="true"><CirclePlus size={22} strokeWidth={1.4}/></span>
               </button>
             </li>)}
           </ul> : <div className="catalog-empty">
             <p>{t('No hay proyectos que coincidan con la búsqueda.')}</p>
-            <button type="button" className="pill" onClick={() => { setCategory('Todos'); setQuery('') }}>{t('Restablecer filtros')}</button>
+            <button type="button" className="pill ink-control" onClick={() => { setCategory('Todos'); setQuery('') }}>{t('Restablecer filtros')}</button>
           </div>}
         </section>
       </div>
       <dialog ref={dialog} className="project-dialog" aria-labelledby="project-dialog-title" onClick={event => { if (event.target === event.currentTarget) dialog.current?.close() }} onClose={() => { setSelected(null); trigger.current?.focus() }}>
         {selected && <div className="dialog-content">
-          <button type="button" className="dialog-close" aria-label={t('Cerrar proyecto')} autoFocus onClick={() => dialog.current?.close()}><X size={22}/></button>
+          <button type="button" className="dialog-close ink-control" aria-label={t('Cerrar proyecto')} autoFocus onClick={() => dialog.current?.close()}><X size={22}/></button>
           <figure className="dialog-art">
             <Media project={selected}/>
             {(!selected.image || selected.image.caption) && <figcaption className="art-caption">{t(selected.image?.caption ?? 'Ilustración conceptual')}</figcaption>}
@@ -127,10 +130,10 @@ export function Projects() {
             {selected.technologies.length > 0 && <ul className="tags">{selected.technologies.map(technology => <li key={technology}>{t(technology)}</li>)}</ul>}
             {selected.video && <video controls preload="none" src={assetUrl(selected.video)}><a href={assetUrl(selected.video)}>{t('Descargar vídeo')}</a></video>}
             <div className="link-row">
-              {selected.github && <a href={selected.github} className="pill"><GitFork size={17}/> {t('Repositorio')}</a>}
-              {selected.resource && <a href={selected.resource.url} className="pill"><FileText size={17}/> {t(selected.resource.label)}</a>}
-              {selected.walkthrough && <a href={selected.walkthrough} className="pill"><Play size={17}/> {t('Ver vídeo')}</a>}
-              {selected.demo && <a href={selected.demo} className="pill"><CodeXml size={17}/> {t('Demo')}</a>}
+              {selected.github && <a href={selected.github} className="pill ink-control"><GitFork size={17}/> {t('Repositorio')}</a>}
+              {selected.resource && <a href={selected.resource.url} className="pill ink-control"><FileText size={17}/> {t(selected.resource.label)}</a>}
+              {selected.walkthrough && <a href={selected.walkthrough} className="pill ink-control"><Play size={17}/> {t('Ver vídeo')}</a>}
+              {selected.demo && <a href={selected.demo} className="pill ink-control"><CodeXml size={17}/> {t('Demo')}</a>}
             </div>
           </div>
         </div>}

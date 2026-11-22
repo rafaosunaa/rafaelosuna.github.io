@@ -1,6 +1,7 @@
 import { useLanguage } from '../language'
 import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
+import { SectionEdge } from './SectionEdge'
 import { experience, volunteering } from '../data/experience'
 import type { Milestone } from '../data/experience'
 import { education } from '../data/education'
@@ -58,6 +59,7 @@ export function Resume() {
 
   return (
     <section id="trayectoria" className="resume" aria-labelledby="resume-title">
+      <SectionEdge/>
       <div className="shell">
         <p className="eyebrow"><span className="section-mark"/> {t('Currículum')}</p>
         <h2 id="resume-title" data-reveal>{t('Trayectoria')}<span className="accent">.</span></h2>

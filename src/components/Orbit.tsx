@@ -42,7 +42,7 @@ export function Orbit({ location }: { location: string }) {
       </div>
       <div className="orbit-controls">
         <span className="location"><MapPin size={15} aria-hidden="true"/>{location}</span>
-        <button className="orbit-toggle" type="button" onClick={toggleAnimation}>
+        <button className="orbit-toggle ink-control" type="button" onClick={toggleAnimation}>
           {playing ? <Pause size={15} aria-hidden="true"/> : <Play size={15} aria-hidden="true"/>}
           {t(playing ? 'Pausar animación' : 'Activar animación')}
         </button>
