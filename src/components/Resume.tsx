@@ -83,7 +83,7 @@ export function Resume() {
             <section id="habilidades" data-reveal>
               <h3>{t('Habilidades')}</h3>
               <div className="skill-list">
-                {skills.filter(skill => skill.items.length).map(skill => <details className="accordion" key={skill.title}>
+                {skills.filter(skill => skill.items.length).map(skill => <details className="accordion" key={skill.title} open>
                   <summary>{t(skill.title)}<Plus size={19}/></summary>
                   <ul className="tags">{skill.items.map(item => <li key={item}>{t(item)}</li>)}</ul>
                 </details>)}

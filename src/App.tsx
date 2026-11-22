@@ -2,7 +2,7 @@ import { LanguageSelector, useLanguage } from './language'
 import { Orbit } from './components/Orbit'
 import { SectionEdge } from './components/SectionEdge'
 import { assetUrl } from './assets'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, Menu, X } from 'lucide-react'
 import { personal } from './data/personal'
 import { Projects } from './components/Projects'
@@ -13,8 +13,38 @@ const navigation = [
   ['Proyectos', '#proyectos'], ['Sobre mí', '#sobre-mi'], ['Trayectoria', '#trayectoria'], ['Contacto', '#contacto'],
 ]
 
+const sectionIds = navigation.map(([, href]) => href.slice(1))
+
+function useActiveSection(ids: string[]) {
+  const [active, setActive] = useState('')
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      let current = ''
+      for (const id of ids) {
+        const element = document.getElementById(id)
+        if (element && element.getBoundingClientRect().top <= innerHeight * .4) current = id
+      }
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) current = ids[ids.length - 1]
+      setActive(current)
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
+    schedule()
+    addEventListener('scroll', schedule, { passive: true })
+    addEventListener('resize', schedule)
+    return () => {
+      cancelAnimationFrame(frame)
+      removeEventListener('scroll', schedule)
+      removeEventListener('resize', schedule)
+    }
+  }, [ids])
+  return active
+}
+
 function Header() {
   const { t } = useLanguage()
+  const active = useActiveSection(sectionIds)
   const [open, setOpen] = useState(false)
   const opener = useRef<HTMLButtonElement>(null)
   return <header className="site-header" onKeyDown={event => {
@@ -32,7 +62,7 @@ function Header() {
           {open ? <X size={20}/> : <Menu size={20}/>}<span>{t(open ? 'Cerrar' : 'Menú')}</span>
         </button>
         <nav id="navigation" className={`main-nav ${open ? 'is-open' : ''}`} aria-label={t('Navegación principal')}>
-          {navigation.map(([label, href]) => <a key={href} href={href} className="paper-control" onClick={() => setOpen(false)}>{t(label)}</a>)}
+          {navigation.map(([label, href]) => <a key={href} href={href} className="paper-control" aria-current={active === href.slice(1) ? 'location' : undefined} onClick={() => setOpen(false)}>{t(label)}</a>)}
         </nav>
         <LanguageSelector/>
       </div>
@@ -58,16 +88,19 @@ function Hero() {
         <div className="hero-copy">
           <p className="hero-role">{t(personal.role)}</p>
           <p className="hero-tagline">{t(personal.tagline)}</p>
-          <a className="scroll-link paper-control" href="#proyectos">
-            {t('Explorar proyectos')}
-            <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
-          </a>
+          <div className="hero-actions">
+            <a className="scroll-link paper-control" href="#proyectos">
+              {t('Explorar proyectos')}
+              <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
+            </a>
+            <DownloadCV/>
+          </div>
         </div>
         <Orbit location={t(personal.location)}/>
       </div>
       <nav className="hero-index" aria-label={t('Índice de secciones')}>
-        {navigation.map(([label, href]) => (
-          <a key={href} href={href}><span>{t(label)}</span></a>
+        {navigation.map(([label, href], index) => (
+          <a key={href} href={href}><span><i className="idx" aria-hidden="true">{String(index + 1).padStart(2, '0')}</i>{t(label)}</span></a>
         ))}
       </nav>
     </div>

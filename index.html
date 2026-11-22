@@ -8,6 +8,13 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Rafael Osuna Ventura · Portfolio">
     <meta property="og:description" content="Proyectos y trayectoria en software, sistemas y ciberseguridad.">
+    <meta property="og:url" content="https://rafaosunaa.github.io/">
+    <meta property="og:image" content="https://rafaosunaa.github.io/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="es_ES">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://rafaosunaa.github.io/">
     <link rel="icon" href="/mark.svg" type="image/svg+xml">
     <title>Rafael Osuna Ventura · Portfolio</title>
     <style>
@@ -59,6 +66,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width:40rem;margin:3rem auto;padding:0 1.25rem;font:1rem/1.6 system-ui,sans-serif;color:#174478">
+        <h1>Rafael Osuna Ventura</h1>
+        <p>Técnico Superior en ASIR y estudiante de Ingeniería Informática. Software · Sistemas · Ciberseguridad.</p>
+        <p><a href="mailto:rafaelosunaventura@gmail.com">rafaelosunaventura@gmail.com</a> ·
+          <a href="https://github.com/rafaosunaa">GitHub</a> ·
+          <a href="https://www.linkedin.com/in/rafael-osuna-ventura/">LinkedIn</a> ·
+          <a href="/rafael-osuna-ventura-cv.pdf">Descargar CV</a></p>
+        <p>Esta web necesita JavaScript para mostrar el portfolio completo.</p>
+      </div>
+    </noscript>
     <div class="intro" aria-hidden="true">
       <div class="intro-sheet"></div>
       <div class="intro-seed"></div>
@@ -67,19 +85,30 @@
       </div>
     </div>
     <script>
-      if (!location.hash || location.hash === '#inicio') {
-        const page = document.documentElement;
-        const app = document.getElementById('root');
+      (function () {
+        var seen = false;
+        try { seen = sessionStorage.getItem('intro-seen') === '1'; } catch (e) {}
+        var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if ((location.hash && location.hash !== '#inicio') || seen || calm) return;
+        var page = document.documentElement;
+        var app = document.getElementById('root');
         document.querySelector('.intro').dataset.started = String(performance.now());
-        const deadline = window.setTimeout(() => document.dispatchEvent(new Event('portfolio:preloaded')), 6900);
-        document.addEventListener('portfolio:preloaded', () => {
+        var skip = function () { document.dispatchEvent(new Event('portfolio:preloaded')); };
+        var deadline = window.setTimeout(skip, 6900);
+        document.addEventListener('portfolio:preloaded', function () {
           window.clearTimeout(deadline);
+          window.removeEventListener('pointerdown', skip);
+          window.removeEventListener('keydown', skip);
+          try { sessionStorage.setItem('intro-seen', '1'); } catch (e) {}
           page.removeAttribute('data-preloading');
           app.inert = false;
         }, { once: true });
+        // Un clic, un toque o una tecla saltan la introducción.
+        window.addEventListener('pointerdown', skip);
+        window.addEventListener('keydown', skip);
         page.setAttribute('data-preloading', '');
         app.inert = true;
-      }
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
