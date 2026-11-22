@@ -127,6 +127,9 @@ button { cursor: pointer; }
 .hero-name--fill { position: absolute; inset: 0; pointer-events: none; user-select: none; visibility: hidden; }
 .hero h1[data-filling="true"] .hero-name--base { color: transparent; -webkit-text-stroke: 1px var(--folio-ink); }
 .hero h1[data-filling="true"] .hero-name--fill { visibility: visible; }
+@supports (-webkit-text-stroke: 1px currentColor) and (clip-path: inset(0 100% 0 0)) {
+  html[data-preloading] .hero-name--base { color: transparent; -webkit-text-stroke: 1px var(--folio-ink); }
+}
 .hero-line { display: block; overflow: hidden; padding: .04em .036em .12em 0; }
 .hero-line > span { display: block; }
 .hero-main {
@@ -363,11 +366,6 @@ button { cursor: pointer; }
 .contact .link-row { margin-top: .45rem; }
 .footer-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.4rem; flex-wrap: wrap; margin-top: clamp(2.8rem, 6vw, 6rem); border-top: 1px solid var(--inverse-rule); padding: 1.25rem 0; color: var(--inverse-muted); font: 400 .82rem var(--folio-mono); }
 .footer-bar a:hover { text-decoration: underline; text-underline-offset: .25em; }
-
-.intro { position: fixed; z-index: 100; inset: 0; display: flex; align-items: end; justify-content: space-between; padding: clamp(1.25rem, 5.5vw, 6rem); pointer-events: none; visibility: hidden; color: var(--folio-paper); background: var(--deep-ink); }
-.intro .brand { font-size: clamp(3.5rem, 8vw, 8rem); }
-.intro .brand span { color: var(--light-ink); }
-.intro-count { font: 500 clamp(1.2rem, 3vw, 3rem) ui-monospace, monospace; color: var(--light-ink); }
 
 @media (max-width: 700px) {
   .header-inner { height: 4.2rem; }

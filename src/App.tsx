@@ -140,10 +140,6 @@ export default function App() {
   return <div ref={scope}>
     <InkFilter/>
     <a className="skip-link" href="#contenido">{t('Saltar al contenido')}</a>
-    <div className="intro" aria-hidden="true">
-      <span className="brand">ro<span>.</span></span>
-      <span className="intro-count">0%</span>
-    </div>
     <Header/>
     <main id="contenido">
       <Hero/>
