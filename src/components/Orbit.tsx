@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { MapPin, Pause, Play } from 'lucide-react'
 import { useLanguage } from '../language'
 import orbital from './orbital.svg?raw'
-import { PaperFold } from './PaperFold'
 
 const storageKey = 'portfolio-orbit-motion'
 
@@ -30,7 +29,7 @@ export function Orbit({ location }: { location: string }) {
 
   return (
     <div className="orbit-panel" data-playing={playing}>
-      <div className="orbit-paper" aria-hidden="true">
+      <div className="orbit-visual" aria-hidden="true">
         <div className="orbits-float">
           <div className="orbit-scene">
             <div className="orbital" dangerouslySetInnerHTML={{ __html: orbital }}/>
@@ -38,7 +37,6 @@ export function Orbit({ location }: { location: string }) {
             <span className="orbit-cross two">+</span>
           </div>
         </div>
-        <PaperFold/>
       </div>
       <div className="orbit-controls">
         <span className="location"><MapPin size={15} aria-hidden="true"/>{location}</span>

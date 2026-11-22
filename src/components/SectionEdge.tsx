@@ -1,23 +1,10 @@
-const contours = [
-  {
-    rest: 'M0 0H1200V35C985 15 765 69 599 49C400 23 210 61 0 37Z',
-    peak: 'M0 0H1200V58C1020 95 817 47 599 86C390 112 178 29 0 66Z',
-  },
-  {
-    rest: 'M0 0H1200V24C987 7 765 53 599 34C398 9 210 46 0 24Z',
-    peak: 'M0 0H1200V46C1020 79 817 35 599 71C390 95 178 14 0 51Z',
-  },
-  {
-    rest: 'M0 0H1200V13C988 0 765 37 599 18C398 0 210 29 0 13Z',
-    peak: 'M0 0H1200V30C1020 62 817 17 599 54C390 79 178 0 0 36Z',
-  },
-]
+const restingEdge = 'M0 0H1200V22C980 30 810 12 598 18C382 25 205 34 0 24Z'
+const passingEdge = 'M0 0H1200V26C974 37 813 19 598 26C378 33 198 39 0 28Z'
 
-export function SectionEdge({ layered = false }: { layered?: boolean }) {
-  const visible = layered ? contours : contours.slice(-1)
+export function SectionEdge() {
   return (
-    <svg className={layered ? "section-edge section-edge--layered" : "section-edge"} viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true">
-      {visible.map(({ rest, peak }) => <path key={rest} d={rest} data-edge-peak={peak}/>)}
+    <svg className="section-edge" viewBox="0 0 1200 52" preserveAspectRatio="none" aria-hidden="true">
+      <path d={restingEdge} data-edge-peak={passingEdge}/>
     </svg>
   )
 }

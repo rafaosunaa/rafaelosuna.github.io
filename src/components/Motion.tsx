@@ -2,11 +2,10 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { observeSectionTransitions } from './SectionTransitions'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function observeHeroTitle(root: HTMLElement, isCovered: () => boolean) {
+function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
   const title = root.querySelector<HTMLElement>('#hero-title')
   const fill = title?.querySelector<HTMLElement>('.hero-name--fill')
   if (
@@ -26,7 +25,7 @@ function observeHeroTitle(root: HTMLElement, isCovered: () => boolean) {
   }
 
   const playIfVisible = () => {
-    if (!visible || !ready || isCovered()) return
+    if (!visible || !ready || isIntroPlaying()) return
 
     ready = false
     gsap.set(title, { attr: { 'data-filling': 'true' } })
@@ -61,18 +60,16 @@ function observeHeroTitle(root: HTMLElement, isCovered: () => boolean) {
 }
 
 function animateSectionEdges(root: HTMLElement) {
-  for (const edge of root.querySelectorAll('.section-edge')) {
-    const contour = gsap.timeline({
-      scrollTrigger: { trigger: edge, start: 'top 95%', end: 'bottom 28%', scrub: .34 },
+  for (const path of root.querySelectorAll<SVGPathElement>('.section-edge path')) {
+    const rest = path.getAttribute('d')
+    const peak = path.dataset.edgePeak
+    if (!rest || !peak) continue
+
+    gsap.timeline({
+      scrollTrigger: { trigger: path.ownerSVGElement, start: 'top bottom', end: 'top 32%', scrub: .4 },
     })
-    edge.querySelectorAll<SVGPathElement>('[data-edge-peak]').forEach((path, index) => {
-      const rest = path.getAttribute('d')
-      const peak = path.dataset.edgePeak
-      if (!rest || !peak) return
-      const start = index * .09
-      contour.to(path, { attr: { d: peak }, duration: .64, ease: 'power1.inOut' }, start)
-        .to(path, { attr: { d: rest }, duration: .7, ease: 'power1.inOut' }, start + .64)
-    })
+      .to(path, { attr: { d: peak }, duration: .5, ease: 'sine.inOut' })
+      .to(path, { attr: { d: rest }, duration: .5, ease: 'sine.inOut' })
   }
 
   const reveals = new Map<Element, gsap.core.Tween>()
@@ -112,9 +109,7 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     if (initialSection && scrollY === 0) initialSection.scrollIntoView({ behavior: 'instant' })
 
     let introPlaying = false
-    const cover = root.querySelector('.section-transition')
-    const title = observeHeroTitle(root, () => introPlaying || Boolean(cover?.hasAttribute('data-effect')))
-    const disposeSectionTransitions = observeSectionTransitions(root, () => title?.playIfVisible())
+    const title = observeHeroTitle(root, () => introPlaying)
 
     function finishIntro() {
       if (!introPlaying) return
@@ -147,19 +142,18 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue
         gsap.from(item, {
-          y: 24, opacity: 0, duration: .65, ease: 'power2.out', clearProps: 'transform,opacity',
+          y: 12, opacity: .75, duration: .45, ease: 'power2.out', clearProps: 'transform,opacity',
           scrollTrigger: { trigger: item, start: 'top 93%', once: true },
         })
       }
       gsap.to(root.querySelector('.orbits-float'), {
-        y: 38, ease: 'none',
+        y: 22, ease: 'none',
         scrollTrigger: { trigger: root.querySelector('.hero'), start: 'top top', end: 'bottom top', scrub: true },
       })
       return disposeEdges
     }, root)
     return () => {
       title?.dispose()
-      disposeSectionTransitions?.()
       motion.revert()
     }
   }, [scope])

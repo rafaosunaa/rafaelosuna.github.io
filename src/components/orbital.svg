@@ -1,11 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 475">
 <defs>
 <radialGradient id="glow" cx=".6" cy=".37" r=".68"><stop stop-color="#a7bad0" stop-opacity=".06"/><stop offset=".68" stop-color="#637e9e" stop-opacity=".17"/><stop offset="1" stop-color="#244d79" stop-opacity=".39"/></radialGradient>
-<pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#426783" stroke-width=".6" opacity=".26"/></pattern>
-<radialGradient id="fade"><stop offset=".25" stop-color="#fff"/><stop offset=".95" stop-color="#000"/></radialGradient>
-<mask id="mask"><rect width="500" height="475" fill="url(#fade)"/></mask>
 </defs>
-<rect class="orbit-grid" x="8" y="1" width="484" height="474" fill="url(#grid)" mask="url(#mask)"/>
 <g class="orbit-guides" fill="none" stroke="#3e6280" stroke-width=".7"><circle cx="250" cy="238" r="178" opacity=".32" stroke-dasharray="2 6"/>
 <circle cx="250" cy="238" r="162" opacity=".25"/>
 <path d="M250 42v20m0 352v20M54 238h20m352 0h20M89 107v16m-8-8h16m292 240v16m-8-8h16"/>

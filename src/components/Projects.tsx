@@ -60,10 +60,10 @@ export function Projects() {
 
   return (
     <section className="work dark-section" id="proyectos" aria-labelledby="work-title">
-      <SectionEdge layered/>
+      <SectionEdge/>
       <div className="shell">
         <p className="eyebrow"><span className="section-mark"/> {t('Portafolio')}</p>
-        <div className="work-heading">
+        <div className="work-heading" data-reveal>
           <h2 id="work-title">{t('Proyectos')}<span className="accent">.</span></h2>
           <a href="#catalogo" className="pill ink-control" data-magnetic>{t('Ver todos los proyectos')}</a>
         </div>

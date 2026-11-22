@@ -1,7 +1,6 @@
 import { LanguageSelector, useLanguage } from './language'
 import { Orbit } from './components/Orbit'
 import { InkFilter, SectionEdge } from './components/SectionEdge'
-import { SectionTransitions } from './components/SectionTransitions'
 import { assetUrl } from './assets'
 import { useRef, useState } from 'react'
 import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, Menu, X } from 'lucide-react'
@@ -110,7 +109,7 @@ function Contact() {
     }
   }
   return <footer id="contacto" className="contact dark-section">
-    <SectionEdge layered/>
+    <SectionEdge/>
     <div className="shell">
       <p className="eyebrow"><span className="section-mark"/> {t('Contacto')}</p>
       <h2 data-reveal>{t('Hablemos')}<span className="accent">.</span></h2>
@@ -140,7 +139,6 @@ export default function App() {
   usePointerEffects(scope)
   return <div ref={scope}>
     <InkFilter/>
-    <SectionTransitions/>
     <a className="skip-link" href="#contenido">{t('Saltar al contenido')}</a>
     <div className="intro" aria-hidden="true">
       <span className="brand">ro<span>.</span></span>

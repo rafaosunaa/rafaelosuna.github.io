@@ -74,38 +74,6 @@ button { cursor: pointer; }
   filter: url(#control-ripple);
 }
 
-.section-transition {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  visibility: hidden;
-  z-index: 22;
-}
-.section-transition[data-effect] { visibility: visible; }
-.transition-panel { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-.section-transition[data-effect="displacement"] .transition-displacement,
-.section-transition[data-effect="image-reveal"] .transition-image-reveal,
-.section-transition[data-effect="topography"] .transition-topography,
-.section-transition[data-effect="morph"] .transition-morph { display: block; }
-
-.transition-displacement canvas, .transition-plate, .transition-reveal-art, .transition-reveal-sheet {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.transition-displacement canvas { display: none; }
-.transition-displacement[data-renderer="webgl"] canvas { display: block; }
-.transition-plate:first-child .project-art { color: var(--light-ink); background: var(--folio-ink); }
-.transition-plate:nth-child(2) { clip-path: var(--sweep-clip, inset(0 100% 0 0)); }
-.transition-displacement[data-renderer="webgl"] .transition-plate { visibility: hidden; }
-
-.transition-image-reveal { background: var(--deep-ink); }
-.transition-reveal-art { transform-origin: center; }
-.transition-reveal-art .project-art { background: var(--folio-paper); }
-.transition-reveal-sheet { background: #b9ccdf; }
-
 .site-header { position: sticky; z-index: 10; top: 0; background: var(--folio-paper); color: var(--folio-ink); }
 .header-inner { position: relative; min-height: 4.9rem; display: flex; align-items: center; justify-content: space-between; }
 .header-inner::after { content: ''; position: absolute; height: 1px; bottom: 0; inset-inline: var(--pad); background: var(--folio-rule); }
@@ -173,23 +141,14 @@ button { cursor: pointer; }
 .hero-role { max-width: 23ch; font-size: clamp(1.34rem, 2.4vw, 2.45rem); font-weight: 555; line-height: 1.12; letter-spacing: -.028em; }
 .hero-tagline { max-width: 35ch; font: 400 clamp(.9rem, 1.15vw, 1.03rem)/1.55 var(--folio-mono); margin-top: .85rem; }
 .orbit-panel { min-width: 0; position: relative; }
-.orbit-paper {
-  position: relative;
+.orbit-visual {
   display: grid;
   place-items: center;
-  isolation: isolate;
   min-height: 12rem;
-  overflow: hidden;
-  border: 1px solid var(--folio-rule);
-  background-color: #f5efdf;
-  background-image: radial-gradient(ellipse at 46% 30%, #fcf6e7, transparent 75%),
-    repeating-linear-gradient(0deg, #1744780e 0 1px, transparent 1px 24px),
-    repeating-linear-gradient(90deg, #1744780e 0 1px, transparent 1px 24px);
 }
 .hero::before,
 .about::before,
 .resume::before,
-.orbit-paper::after,
 .art-wrap::after {
   content: '';
   position: absolute;
@@ -202,7 +161,7 @@ button { cursor: pointer; }
   background-size: 120px 120px;
 }
 .hero::before, .about::before, .resume::before { z-index: -1; opacity: .16; }
-.orbit-paper .orbits-float { width: min(100%, 22rem, 44svh); }
+.orbit-visual .orbits-float { width: min(100%, 22rem, 44svh); }
 .paper-fold { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
 .orbital { display: block; width: 100%; height: auto; transform: translate(var(--shift-x, 0px), var(--shift-y, 0px)); transition: transform .38s var(--motion); }
 .orbit-cross { position: absolute; color: #4b6886; font: 400 1rem var(--folio-mono); }
@@ -249,30 +208,19 @@ button { cursor: pointer; }
 [data-magnetic] { transform: translate(var(--shift-x, 0px), var(--shift-y, 0px)); transition: transform .3s var(--motion), background .25s, color .25s; }
 
 .work, .about, .resume, .contact { position: relative; isolation: isolate; }
-.work {
-  --edge-source: var(--folio-paper);
-  --edge-mid: #9faeae;
-  --edge-low: #54779b;
-}
+.work, .resume { --edge-source: var(--folio-paper); }
 .about { --edge-source: var(--folio-ink); }
-.resume { --edge-source: var(--folio-paper); }
-.contact {
-  --edge-source: var(--paper-secondary);
-  --edge-mid: #9ab0c8;
-  --edge-low: #46688d;
-}
+.contact { --edge-source: var(--paper-secondary); }
 .section-edge {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: clamp(2.75rem, 8.4vw, 7.6rem);
+  height: clamp(1.1rem, 3vw, 2.8rem);
   pointer-events: none;
   z-index: -1;
 }
 .section-edge path { fill: var(--edge-source); }
-.section-edge--layered path:nth-child(1) { fill: var(--edge-low); }
-.section-edge--layered path:nth-child(2) { fill: var(--edge-mid); }
 
 .work, .about, .resume { padding-block: clamp(3.2rem, 6.35vw, 7rem); }
 .work-heading { display: flex; justify-content: space-between; align-items: end; gap: .85rem 1.5rem; flex-wrap: wrap; margin: .65rem 0 clamp(1.25rem, 3vw, 2.65rem); }
@@ -428,7 +376,7 @@ button { cursor: pointer; }
   .hero-name { display: block; }
   .hero-main { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   .hero-role { max-width: 26ch; }
-  .orbit-paper .orbits-float { width: min(100%, 17.5rem); }
+  .orbit-visual .orbits-float { width: min(100%, 17.5rem); }
   .hero-index { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .work-heading { margin-bottom: 1.45rem; }
   .work-grid, .about-grid, .resume-layout { grid-template-columns: minmax(0, 1fr); }
@@ -518,7 +466,6 @@ button { cursor: pointer; }
 .orbit-scene { position: relative; --orbit-duration: 8s; animation-name: orbit-float; animation-timing-function: ease-in-out; }
 .orbit-cross { --orbit-duration: 5s; animation-name: orbit-cross-turn; }
 .orbit-cross.two { animation-direction: reverse; }
-.orbit-grid { --orbit-duration: 6s; animation-name: orbit-grid-breathe; animation-timing-function: ease-in-out; }
 .orbit-guides { --orbit-duration: 32s; animation-name: orbit-turn; }
 .planet-glow { --orbit-duration: 9s; animation-name: orbit-turn; }
 .planet-mesh { --orbit-duration: 9s; animation-name: orbit-turn; }
@@ -530,7 +477,6 @@ button { cursor: pointer; }
 @keyframes orbit-turn { to { transform: rotate(1turn); } }
 @keyframes orbit-float { 50% { transform: translateY(-10px) rotate(4deg); } }
 @keyframes orbit-cross-turn { to { transform: rotate(1turn); } }
-@keyframes orbit-grid-breathe { 50% { opacity: .38; transform: scale(.91); } }
 @keyframes orbit-tilt {
   25% { transform: rotate(25deg); }
   75% { transform: rotate(-19deg); }
