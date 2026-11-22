@@ -1,38 +1,27 @@
-import { useState, useSyncExternalStore } from 'react'
+import { useState } from 'react'
 import { Pause, Play } from 'lucide-react'
 import { useLanguage } from '../language'
 import orbital from './orbital.svg?raw'
 
-const preference = '(prefers-reduced-motion: reduce)'
 const storageKey = 'portfolio-orbit-motion'
 
-function subscribe(onChange: () => void) {
-  const media = matchMedia(preference)
-  media.addEventListener('change', onChange)
-  return () => media.removeEventListener('change', onChange)
-}
-
-function readOverride() {
+function initialPlayback() {
   try {
-    const value = localStorage.getItem(storageKey)
-    if (value === 'play' || value === 'pause') return value
+    return localStorage.getItem(storageKey) !== 'pause'
   } catch {
-    // The control also works without storage.
+    return true
   }
-  return null
 }
 
 export function Orbit() {
   const { t } = useLanguage()
-  const reducedMotion = useSyncExternalStore(subscribe, () => matchMedia(preference).matches)
-  const [override, setOverride] = useState(readOverride)
-  const playing = override === null ? !reducedMotion : override === 'play'
+  const [playing, setPlaying] = useState(initialPlayback)
 
   function toggleAnimation() {
-    const next = playing ? 'pause' : 'play'
-    setOverride(next)
+    const next = !playing
+    setPlaying(next)
     try {
-      localStorage.setItem(storageKey, next)
+      localStorage.setItem(storageKey, next ? 'play' : 'pause')
     } catch {
       // Keep the selection for the current visit.
     }
