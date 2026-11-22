@@ -2,7 +2,7 @@ import { LanguageSelector, useLanguage } from './language'
 import { Orbit } from './components/Orbit'
 import { assetUrl } from './assets'
 import { useRef, useState } from 'react'
-import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, MapPin, Menu, X } from 'lucide-react'
+import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, Menu, X } from 'lucide-react'
 import { personal } from './data/personal'
 import { Projects } from './components/Projects'
 import { Resume } from './components/Resume'
@@ -46,12 +46,12 @@ function Hero() {
         <h1 id="hero-title">{personal.headline.map(line => <span className="hero-line" key={line}><span>{line}</span></span>)}</h1>
         <p className="hero-role">{t(personal.role)}</p>
         <p className="hero-tagline">{t(personal.tagline)}</p>
+        <a className="scroll-link" href="#proyectos">
+          {t('Explorar proyectos')}
+          <ArrowDown className="scroll-icon" size={16} aria-hidden="true"/>
+        </a>
       </div>
-      <Orbit/>
-    </div>
-    <div className="hero-bottom">
-      <a className="scroll-link" href="#proyectos" data-magnetic><span className="scroll-icon"><ArrowDown size={17}/></span> {t('Explorar proyectos')}</a>
-      <span className="location"><MapPin size={15}/>{t(personal.location)}</span>
+      <Orbit location={t(personal.location)}/>
     </div>
   </section>
 }

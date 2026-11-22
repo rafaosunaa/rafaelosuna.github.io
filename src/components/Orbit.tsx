@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pause, Play } from 'lucide-react'
+import { MapPin, Pause, Play } from 'lucide-react'
 import { useLanguage } from '../language'
 import orbital from './orbital.svg?raw'
 
@@ -13,7 +13,7 @@ function initialPlayback() {
   }
 }
 
-export function Orbit() {
+export function Orbit({ location }: { location: string }) {
   const { t } = useLanguage()
   const [playing, setPlaying] = useState(initialPlayback)
 
@@ -36,10 +36,13 @@ export function Orbit() {
           <span className="orbit-cross two">+</span>
         </div>
       </div>
-      <button className="orbit-toggle" type="button" onClick={toggleAnimation}>
-        {playing ? <Pause size={15} aria-hidden="true"/> : <Play size={15} aria-hidden="true"/>}
-        {t(playing ? 'Pausar animación' : 'Activar animación')}
-      </button>
+      <div className="orbit-controls">
+        <span className="location"><MapPin size={15} aria-hidden="true"/>{location}</span>
+        <button className="orbit-toggle" type="button" onClick={toggleAnimation}>
+          {playing ? <Pause size={15} aria-hidden="true"/> : <Play size={15} aria-hidden="true"/>}
+          {t(playing ? 'Pausar animación' : 'Activar animación')}
+        </button>
+      </div>
     </div>
   )
 }
