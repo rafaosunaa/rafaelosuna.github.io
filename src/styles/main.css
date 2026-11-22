@@ -307,7 +307,7 @@ button { cursor: pointer; }
 .project-name { display: block; font-size: clamp(1.37rem, 2.35vw, 2.4rem); font-weight: 570; line-height: 1.1; letter-spacing: -.027em; }
 .cursor-ring { display: none; position: fixed; z-index: 19; top: 0; left: 0; pointer-events: none; }
 .cursor-ring::before { content: ''; display: block; translate: -50% -50%; width: 2.8rem; height: 2.8rem; border: 1px solid #174478; border-radius: 50%; background: #17447821; }
-@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) { .cursor-ring.visible { display: block; } }
+@media (hover:hover) and (pointer:fine) { .cursor-ring.visible { display: block; } }
 .project-dialog { position: fixed; inset: 0; margin: auto; width: min(43rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); border: 1px solid var(--folio-rule); padding: 0; color: var(--folio-ink); background: var(--folio-paper); overscroll-behavior: contain; }
 .project-dialog::backdrop { background: #102e54dc; }
 .project-dialog[open] { animation: dialog-in .35s var(--motion) both; }
@@ -425,10 +425,6 @@ button { cursor: pointer; }
   .about h2 { max-width: none; font-size: clamp(2.4rem, 9.4vw, 3.85rem); overflow-wrap: anywhere; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
-
 .catalog { margin-top: clamp(3rem, 6.5vw, 6rem); border-top: 1px solid var(--inverse-rule); padding-top: clamp(1.4rem, 3vw, 2.8rem); }
 .catalog-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.1rem; margin-bottom: 1.3rem; }
 .catalog-heading h3 { font-size: clamp(2.8rem, 6vw, 5.3rem); }
@@ -502,13 +498,6 @@ button { cursor: pointer; }
 
 .orbit-panel[data-playing="true"] :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
   animation-play-state: running;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* The orbit control owns playback and can pause at the current frame. */
-  .orbit-panel :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
-    animation-duration: var(--orbit-duration) !important;
-  }
 }
 
 .orbital svg > [class] { transform-origin: 250px 238px; }

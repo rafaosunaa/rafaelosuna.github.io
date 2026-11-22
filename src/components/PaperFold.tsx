@@ -9,7 +9,6 @@ export function PaperFold() {
     const context = canvas?.getContext('2d')
     if (!canvas || !panel || !context) return
 
-    const motion = matchMedia('(prefers-reduced-motion: no-preference)')
     const target = { x: 0, y: 0, pressure: 0 }
     const fold = { x: 0, y: 0, pressure: 0 }
     let width = 0
@@ -64,7 +63,6 @@ export function PaperFold() {
     }
 
     const move = (event: PointerEvent) => {
-      if (!motion.matches || (event.pointerType !== 'mouse' && event.pointerType !== 'pen')) return
       const rect = panel.getBoundingClientRect()
       target.x = event.clientX - rect.left
       target.y = event.clientY - rect.top
@@ -82,6 +80,10 @@ export function PaperFold() {
       target.pressure = 0
     }
 
+    const leave = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') relax()
+    }
+
     const reset = () => {
       cancelAnimationFrame(frame)
       frame = 0
@@ -93,15 +95,17 @@ export function PaperFold() {
     const layout = new ResizeObserver(resize)
     layout.observe(panel)
     resize()
-    panel.addEventListener('pointermove', move)
-    panel.addEventListener('pointerleave', relax)
-    motion.addEventListener('change', reset)
+    panel.addEventListener('pointermove', move, { passive: true })
+    panel.addEventListener('pointerdown', move, { passive: true })
+    panel.addEventListener('pointerleave', leave)
+    panel.addEventListener('pointercancel', relax)
     return () => {
       layout.disconnect()
       reset()
       panel.removeEventListener('pointermove', move)
-      panel.removeEventListener('pointerleave', relax)
-      motion.removeEventListener('change', reset)
+      panel.removeEventListener('pointerdown', move)
+      panel.removeEventListener('pointerleave', leave)
+      panel.removeEventListener('pointercancel', relax)
     }
   }, [])
 
