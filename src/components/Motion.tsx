@@ -59,28 +59,99 @@ function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
   }
 }
 
-function animateSectionEdges(root: HTMLElement) {
+function animateSectionEdges(root: HTMLElement, reduced: boolean) {
   for (const edge of root.querySelectorAll('.section-edge')) {
     const contour = gsap.timeline({
-      scrollTrigger: { trigger: edge, start: 'top 92%', end: 'bottom 35%', scrub: .36 },
+      scrollTrigger: { trigger: edge, start: 'top 95%', end: 'bottom 28%', scrub: .34 },
     })
     edge.querySelectorAll<SVGPathElement>('[data-edge-peak]').forEach((path, index) => {
       const rest = path.getAttribute('d')
       const peak = path.dataset.edgePeak
       if (!rest || !peak) return
       const start = index * .09
-      contour.to(path, { attr: { d: peak }, duration: .6, ease: 'power1.inOut' }, start)
-        .to(path, { attr: { d: rest }, duration: .65, ease: 'power1.inOut' }, start + .6)
+      const swell = reduced ? { opacity: .68 } : { attr: { d: peak } }
+      const settle = reduced ? { opacity: 1 } : { attr: { d: rest } }
+      contour.to(path, { ...swell, duration: .64, ease: 'power1.inOut' }, start)
+        .to(path, { ...settle, duration: .7, ease: 'power1.inOut' }, start + .64)
     })
   }
 
-  for (const sheet of root.querySelectorAll<HTMLElement>('.project-reveal')) {
-    if (sheet.getBoundingClientRect().top <= innerHeight) continue
-    gsap.fromTo(sheet, { visibility: 'visible', clipPath: 'inset(0 0 0 0)' }, {
-      clipPath: 'inset(0 0 0 100%)', duration: .8, ease: 'power3.inOut',
-      clearProps: 'clipPath,visibility',
-      scrollTrigger: { trigger: sheet, start: 'top 86%', once: true },
-    })
+  const reveals = new Map<Element, gsap.core.Tween>()
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const sheet = entry.target
+      if (!entry.isIntersecting) {
+        reveals.get(sheet)?.kill()
+        reveals.delete(sheet)
+        gsap.set(sheet, { clearProps: 'clipPath,visibility,opacity' })
+        continue
+      }
+      if (entry.intersectionRatio < .18 || reveals.has(sheet)) continue
+
+      const style = reduced ? { opacity: .73 } : { clipPath: 'inset(0 0 0 0)' }
+      const end = reduced ? { opacity: 0 } : { clipPath: 'inset(0 0 0 100%)' }
+      gsap.set(sheet, { visibility: 'visible', ...style })
+      reveals.set(sheet, gsap.to(sheet, {
+        ...end, duration: reduced ? .49 : .93, ease: 'power3.inOut', clearProps: 'clipPath,visibility,opacity',
+      }))
+    }
+  }, { threshold: [0, .18] })
+
+  const sheets = root.querySelectorAll('.project-reveal')
+  sheets.forEach(sheet => observer.observe(sheet))
+  return () => {
+    observer.disconnect()
+    reveals.forEach(reveal => reveal.kill())
+    gsap.set(sheets, { clearProps: 'clipPath,visibility,opacity' })
+  }
+}
+
+const sectionAnchors = new Set(['inicio', 'proyectos', 'catalogo', 'sobre-mi', 'trayectoria', 'contacto'])
+
+function listenForSectionLinks(root: HTMLElement) {
+  const curtain = root.querySelector<HTMLElement>('.section-curtain')
+  if (!curtain) return
+  const layers = curtain.querySelectorAll('.section-curtain-layer')
+  const preference = matchMedia('(prefers-reduced-motion: reduce)')
+  let playback: gsap.core.Timeline | undefined
+
+  const clearCurtain = () => {
+    gsap.set(curtain, { clearProps: 'visibility,opacity' })
+    gsap.set(layers, { clearProps: 'transform' })
+  }
+
+  function moveBetweenSections(event: MouseEvent) {
+    if (
+      event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey ||
+      event.altKey || !(event.target instanceof Element)
+    ) return
+    const link = event.target.closest<HTMLAnchorElement>('a[href^="#"]')
+    const id = link?.getAttribute('href')?.slice(1)
+    if (!link || !id || !sectionAnchors.has(id) || (link.target && link.target !== '_self')) return
+    const section = document.getElementById(id)
+    if (!section) return
+    const distance = section.getBoundingClientRect().top - (root.querySelector('.site-header')?.getBoundingClientRect().height ?? 0)
+    if (Math.abs(distance) < 54) return
+
+    playback?.kill()
+    clearCurtain()
+    playback = gsap.timeline({ onComplete: clearCurtain })
+    if (preference.matches) {
+      playback.fromTo(curtain, { autoAlpha: 0 }, { autoAlpha: .45, duration: .16 })
+        .to(curtain, { autoAlpha: 0, duration: .39 })
+    } else {
+      const direction = distance > 0 ? 1 : -1
+      playback.set(curtain, { autoAlpha: 1 }).fromTo(layers, { yPercent: 106 * direction }, {
+        yPercent: -110 * direction, duration: .9, stagger: .07, ease: 'power2.inOut',
+      }, 0)
+    }
+  }
+
+  root.addEventListener('click', moveBetweenSections)
+  return () => {
+    root.removeEventListener('click', moveBetweenSections)
+    playback?.kill()
+    clearCurtain()
   }
 }
 
@@ -95,7 +166,12 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     let introPlaying = false
     let introShown = false
     const title = observeHeroTitle(root, () => introPlaying)
+    const disposeSectionLinks = listenForSectionLinks(root)
     const motion = gsap.matchMedia()
+    motion.add({
+      full: '(prefers-reduced-motion: no-preference)',
+      reduced: '(prefers-reduced-motion: reduce)',
+    }, context => animateSectionEdges(root, Boolean(context.conditions?.reduced)))
 
     function finishIntro() {
       if (!introPlaying) return
@@ -125,8 +201,6 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
         y: 16, opacity: 0, duration: .55, ease: 'power2.out', stagger: .08, clearProps: 'transform,opacity',
       }, '+=.76')
 
-      animateSectionEdges(root)
-
       for (const item of root.querySelectorAll('[data-reveal]')) {
         if (item.getBoundingClientRect().top <= innerHeight) continue
         gsap.from(item, {
@@ -142,6 +216,7 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     })
     return () => {
       title?.dispose()
+      disposeSectionLinks?.()
       motion.revert()
     }
   }, [scope])
@@ -154,24 +229,36 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
     if (!root) return
     const cursor = root.querySelector<HTMLElement>('.cursor-ring')
     const ripple = root.querySelector('#control-ripple feDisplacementMap')
-    const allowRipple = matchMedia('(prefers-reduced-motion: no-preference)')
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
     let rippleAnimation: gsap.core.Timeline | undefined
+    let ripplingControl: HTMLElement | null = null
+
+    function clearRipple() {
+      ripplingControl?.removeAttribute('data-rippling')
+      ripple?.setAttribute('scale', '0')
+      ripplingControl = null
+    }
 
     function rippleControl(event: PointerEvent | FocusEvent) {
-      if (!ripple || !allowRipple.matches || !(event.target instanceof Element)) return
-      const control = event.target.closest('.project-trigger, .catalog-entry') ?? event.target.closest('.ink-control')
+      if (!ripple || !(event.target instanceof Element)) return
+      const control = event.target.closest<HTMLElement>('.project-trigger, .catalog-entry') ??
+        event.target.closest<HTMLElement>('.ink-control')
       if (!control) return
 
       if (event.type === 'pointerover' && (
-        !pointer.matches || (event instanceof PointerEvent && event.pointerType !== 'mouse') ||
+        !(event instanceof PointerEvent) || event.pointerType === 'touch' ||
         (event.relatedTarget instanceof Node && control.contains(event.relatedTarget))
       )) return
       if (event.type === 'focusin' && !control.matches(':focus-visible')) return
 
       rippleAnimation?.kill()
-      rippleAnimation = gsap.timeline()
-        .fromTo(ripple, { attr: { scale: 0 } }, { attr: { scale: 15 }, duration: .23, ease: 'power2.out' })
-        .to(ripple, { attr: { scale: 0 }, duration: .56, ease: 'power2.out' })
+      clearRipple()
+      ripplingControl = control
+      control.setAttribute('data-rippling', '')
+      const reduced = reducedMotion.matches
+      rippleAnimation = gsap.timeline({ onComplete: clearRipple })
+        .to(ripple, { attr: { scale: reduced ? 12 : 29 }, duration: .2, ease: 'power2.out' })
+        .to(ripple, { attr: { scale: 0 }, duration: reduced ? .37 : .65, ease: 'power2.out' })
     }
 
     let active: HTMLElement | null = null
@@ -203,15 +290,17 @@ export function usePointerEffects(scope: RefObject<HTMLDivElement | null>) {
 
     root.addEventListener('pointermove', move)
     root.addEventListener('pointerover', rippleControl)
+    root.addEventListener('pointerdown', rippleControl)
     root.addEventListener('focusin', rippleControl)
     root.addEventListener('pointerleave', reset)
     root.addEventListener('click', reset)
     pointer.addEventListener('change', reset)
     return () => {
       rippleAnimation?.kill()
-      ripple?.setAttribute('scale', '0')
+      clearRipple()
       root.removeEventListener('pointermove', move)
       root.removeEventListener('pointerover', rippleControl)
+      root.removeEventListener('pointerdown', rippleControl)
       root.removeEventListener('focusin', rippleControl)
       root.removeEventListener('pointerleave', reset)
       root.removeEventListener('click', reset)

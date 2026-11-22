@@ -32,3 +32,21 @@ export function InkFilter() {
     </defs>
   </svg>
 }
+
+const curtainShapes = [
+  'M0 19C210 56 407 5 610 20C833 36 1020 36 1200 4V110H0Z',
+  'M0 27C196 8 402 64 607 37C798 14 1016 76 1200 35V110H0Z',
+  'M0 14C205 52 414 15 610 36C815 60 1007 3 1200 24V110H0Z',
+]
+
+export function SectionCurtain() {
+  return (
+    <div className="section-curtain" aria-hidden="true">
+      {curtainShapes.map(shape => (
+        <svg key={shape} viewBox="0 0 1200 110" preserveAspectRatio="none" className="section-curtain-layer">
+          <path d={shape}/>
+        </svg>
+      ))}
+    </div>
+  )
+}

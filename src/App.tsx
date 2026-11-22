@@ -1,6 +1,6 @@
 import { LanguageSelector, useLanguage } from './language'
 import { Orbit } from './components/Orbit'
-import { InkFilter, SectionEdge } from './components/SectionEdge'
+import { InkFilter, SectionCurtain, SectionEdge } from './components/SectionEdge'
 import { assetUrl } from './assets'
 import { useRef, useState } from 'react'
 import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, Menu, X } from 'lucide-react'
@@ -139,6 +139,7 @@ export default function App() {
   usePointerEffects(scope)
   return <div ref={scope}>
     <InkFilter/>
+    <SectionCurtain/>
     <a className="skip-link" href="#contenido">{t('Saltar al contenido')}</a>
     <div className="intro" aria-hidden="true">
       <span className="brand">ro<span>.</span></span>
