@@ -244,15 +244,63 @@ button { cursor: pointer; }
 
 .orbital svg { display: block; width: 100%; height: auto; aspect-ratio: 500 / 475; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .planet-mesh, .planet-satellite {
-    transform-origin: 250px 238px;
-    animation: planet-turn 15s linear infinite;
-  }
+.orbit-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 2.75rem;
+  padding: .4rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 2rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: .82rem;
+}
 
-  .planet-satellite { animation-duration: 6s; }
+.orbit-toggle:hover { border-color: var(--moss); }
 
-  @keyframes planet-turn {
-    to { transform: rotate(1turn); }
-  }
+@media (max-width: 700px) {
+  .orbit-panel { padding-bottom: 2.8rem; }
+  .orbit-toggle { right: .75rem; }
+}
+
+.orbit-scene,
+.orbit-cross,
+.orbital svg > [class] {
+  animation-duration: var(--orbit-duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+
+.orbit-panel[data-playing="true"] :is(.orbit-scene, .orbit-cross, .orbital svg > [class]) {
+  /* Keep the user’s explicit play choice effective even with reduced motion. */
+  animation-duration: var(--orbit-duration) !important;
+  animation-play-state: running;
+}
+
+.orbital svg > [class] { transform-origin: 250px 238px; }
+.orbit-scene { --orbit-duration: 8s; animation-name: orbit-float; animation-timing-function: ease-in-out; }
+.orbit-cross { --orbit-duration: 5s; animation-name: orbit-cross-turn; }
+.orbit-cross.two { animation-direction: reverse; }
+.orbit-grid { --orbit-duration: 6s; animation-name: orbit-grid-breathe; animation-timing-function: ease-in-out; }
+.orbit-guides { --orbit-duration: 32s; animation-name: orbit-turn; }
+.planet-glow { --orbit-duration: 9s; animation-name: orbit-turn; }
+.planet-mesh { --orbit-duration: 9s; animation-name: orbit-turn; }
+.orbit-rings { --orbit-duration: 10s; animation-name: orbit-tilt; animation-timing-function: ease-in-out; }
+.orbit-stars { --orbit-duration: 18s; animation-name: orbit-turn; animation-direction: reverse; }
+.planet-satellite { --orbit-duration: 6s; animation-name: orbit-turn; }
+.planet-satellite.second { --orbit-duration: 11s; animation-direction: reverse; }
+
+@keyframes orbit-turn { to { transform: rotate(1turn); } }
+@keyframes orbit-float { 50% { transform: translateY(-10px) rotate(4deg); } }
+@keyframes orbit-cross-turn { to { transform: rotate(1turn); } }
+@keyframes orbit-grid-breathe { 50% { opacity: .38; transform: scale(.91); } }
+@keyframes orbit-tilt {
+  25% { transform: rotate(25deg); }
+  75% { transform: rotate(-19deg); }
 }

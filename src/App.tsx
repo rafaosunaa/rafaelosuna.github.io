@@ -1,5 +1,5 @@
 import { LanguageSelector, useLanguage } from './language'
-import orbital from './components/orbital.svg?raw'
+import { Orbit } from './components/Orbit'
 import { assetUrl } from './assets'
 import { useRef, useState } from 'react'
 import { ArrowDown, Check, Copy, Download, CodeXml, BriefcaseBusiness, MapPin, Menu, X } from 'lucide-react'
@@ -47,10 +47,7 @@ function Hero() {
         <p className="hero-role">{t(personal.role)}</p>
         <p className="hero-tagline">{t(personal.tagline)}</p>
       </div>
-      <div className="orbit-panel" aria-hidden="true">
-        <div className="orbits-float"><div className="orbital" dangerouslySetInnerHTML={{ __html: orbital }}/></div>
-        <span className="orbit-cross one">+</span><span className="orbit-cross two">+</span>
-      </div>
+      <Orbit/>
     </div>
     <div className="hero-bottom">
       <a className="scroll-link" href="#proyectos" data-magnetic><span className="scroll-icon"><ArrowDown size={17}/></span> {t('Explorar proyectos')}</a>
