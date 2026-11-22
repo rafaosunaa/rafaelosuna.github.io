@@ -1,3 +1,4 @@
+import { useLanguage } from '../language'
 import { assetUrl } from '../assets'
 import { useEffect, useRef, useState } from 'react'
 import { CirclePlus, CodeXml, FileText, GitFork, Play, Search, X } from 'lucide-react'
@@ -13,17 +14,20 @@ function searchable(value: string) {
 }
 
 function ProjectMeta({ project }: { project: Project }) {
-  return <span className="project-meta">{project.category}{project.context && ` · ${project.context}`}</span>
+  const { t } = useLanguage()
+  return <span className="project-meta">{t(project.category)}{project.context && ` · ${t(project.context)}`}</span>
 }
 
 function Media({ project }: { project: Project }) {
+  const { t } = useLanguage()
   if (project.image) {
-    return <img className="project-image" loading="lazy" decoding="async" src={assetUrl(project.image.src)} alt={project.image.alt} />
+    return <img className="project-image" loading="lazy" decoding="async" src={assetUrl(project.image.src)} alt={t(project.image.alt)} />
   }
   return <ProjectArtwork kind={project.artwork} />
 }
 
 export function Projects() {
+  const { t } = useLanguage()
   const [category, setCategory] = useState<Category | 'Todos'>('Todos')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Project | null>(null)
@@ -33,7 +37,8 @@ export function Projects() {
   const visible = projects.filter(project => {
     if (category !== 'Todos' && project.category !== category) return false
     if (!terms.length) return true
-    const text = searchable([project.title, project.category, project.context, project.description, ...project.technologies, ...(project.examples ?? [])].join(' '))
+    const termsInProject = [project.title, project.category, project.context ?? '', project.description, ...project.technologies, ...(project.examples ?? [])]
+    const text = searchable([...termsInProject, ...termsInProject.map(t)].join(' '))
     return terms.every(term => text.includes(term))
   })
 
@@ -54,74 +59,74 @@ export function Projects() {
   return (
     <section className="work dark-section" id="proyectos" aria-labelledby="work-title">
       <div className="shell">
-        <p className="eyebrow"><span className="section-mark"/> Portafolio</p>
+        <p className="eyebrow"><span className="section-mark"/> {t('Portafolio')}</p>
         <div className="work-heading">
-          <h2 id="work-title">Proyectos<span className="accent">.</span></h2>
-          <a href="#catalogo" className="pill" data-magnetic>Ver todos los proyectos</a>
+          <h2 id="work-title">{t('Proyectos')}<span className="accent">.</span></h2>
+          <a href="#catalogo" className="pill" data-magnetic>{t('Ver todos los proyectos')}</a>
         </div>
-        <div className="work-grid" aria-label="Proyectos destacados">
+        <div className="work-grid" aria-label={t('Proyectos destacados')}>
           {featured.map(project => (
             <article key={project.id} className="project">
-              <button type="button" className="project-trigger" aria-label={`Ver destacado: ${project.title}`} onClick={event => openProject(project, event.currentTarget)}>
+              <button type="button" className="project-trigger" aria-label={`${t("Ver destacado")}: ${t(project.title)}`} onClick={event => openProject(project, event.currentTarget)}>
                 <div className="art-wrap">
                   <Media project={project} />
-                  {!project.image && <span className="art-caption">Ilustración conceptual</span>}
+                  {!project.image && <span className="art-caption">{t('Ilustración conceptual')}</span>}
                   <span className="project-open" aria-hidden="true"><CirclePlus size={23} strokeWidth={1.4}/></span>
                 </div>
                 <ProjectMeta project={project}/>
-                <span className="project-name">{project.title}</span>
+                <span className="project-name">{t(project.title)}</span>
               </button>
             </article>
           ))}
         </div>
         <section className="catalog" id="catalogo" aria-labelledby="catalog-title">
           <div className="catalog-heading">
-            <h3 id="catalog-title">Todos los proyectos</h3>
+            <h3 id="catalog-title">{t('Todos los proyectos')}</h3>
             <label className="catalog-search">
               <Search size={18} aria-hidden="true"/>
-              <input type="search" placeholder="Buscar proyectos" value={query} onChange={event => setQuery(event.currentTarget.value)} />
-              <span className="sr-only">Buscar proyectos</span>
+              <input type="search" placeholder={t('Buscar proyectos')} value={query} onChange={event => setQuery(event.currentTarget.value)} />
+              <span className="sr-only">{t('Buscar proyectos')}</span>
             </label>
           </div>
-          <div className="filters" role="group" aria-label="Filtrar proyectos">
-            {filters.map(filter => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => setCategory(filter)}>{filter}</button>)}
+          <div className="filters" role="group" aria-label={t('Filtrar proyectos')}>
+            {filters.map(filter => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => setCategory(filter)}>{t(filter)}</button>)}
           </div>
-          <p className="catalog-count" role="status">{visible.length} {visible.length === 1 ? 'proyecto' : 'proyectos'}</p>
+          <p className="catalog-count" role="status">{visible.length} {t(visible.length === 1 ? 'proyecto' : 'proyectos')}</p>
           {visible.length > 0 ? <ul className="catalog-list">
             {visible.map(project => <li key={project.id}>
               <button type="button" className="catalog-entry" onClick={event => openProject(project, event.currentTarget)}>
                 <span>
                   <ProjectMeta project={project}/>
-                  <span className="catalog-name">{project.title}</span>
+                  <span className="catalog-name">{t(project.title)}</span>
                 </span>
                 <CirclePlus size={22} strokeWidth={1.4} aria-hidden="true"/>
               </button>
             </li>)}
           </ul> : <div className="catalog-empty">
-            <p>No hay proyectos que coincidan con la búsqueda.</p>
-            <button type="button" className="pill" onClick={() => { setCategory('Todos'); setQuery('') }}>Restablecer filtros</button>
+            <p>{t('No hay proyectos que coincidan con la búsqueda.')}</p>
+            <button type="button" className="pill" onClick={() => { setCategory('Todos'); setQuery('') }}>{t('Restablecer filtros')}</button>
           </div>}
         </section>
       </div>
       <dialog ref={dialog} className="project-dialog" aria-labelledby="project-dialog-title" onClick={event => { if (event.target === event.currentTarget) dialog.current?.close() }} onClose={() => { setSelected(null); trigger.current?.focus() }}>
         {selected && <div className="dialog-content">
-          <button type="button" className="dialog-close" aria-label="Cerrar proyecto" autoFocus onClick={() => dialog.current?.close()}><X size={22}/></button>
+          <button type="button" className="dialog-close" aria-label={t('Cerrar proyecto')} autoFocus onClick={() => dialog.current?.close()}><X size={22}/></button>
           <figure className="dialog-art">
             <Media project={selected}/>
-            {(!selected.image || selected.image.caption) && <figcaption className="art-caption">{selected.image?.caption ?? 'Ilustración conceptual'}</figcaption>}
+            {(!selected.image || selected.image.caption) && <figcaption className="art-caption">{t(selected.image?.caption ?? 'Ilustración conceptual')}</figcaption>}
           </figure>
           <div className="dialog-body">
-            <p className="eyebrow">{selected.category}{selected.context && ` · ${selected.context}`}</p>
-            <h3 id="project-dialog-title">{selected.title}</h3>
-            <p>{selected.description}</p>
-            {selected.examples?.length ? <ul className="project-examples">{selected.examples.map(example => <li key={example}>{example}</li>)}</ul> : null}
-            {selected.technologies.length > 0 && <ul className="tags">{selected.technologies.map(technology => <li key={technology}>{technology}</li>)}</ul>}
-            {selected.video && <video controls preload="none" src={assetUrl(selected.video)}><a href={assetUrl(selected.video)}>Descargar vídeo</a></video>}
+            <p className="eyebrow">{t(selected.category)}{selected.context && ` · ${t(selected.context)}`}</p>
+            <h3 id="project-dialog-title">{t(selected.title)}</h3>
+            <p>{t(selected.description)}</p>
+            {selected.examples?.length ? <ul className="project-examples">{selected.examples.map(example => <li key={example}>{t(example)}</li>)}</ul> : null}
+            {selected.technologies.length > 0 && <ul className="tags">{selected.technologies.map(technology => <li key={technology}>{t(technology)}</li>)}</ul>}
+            {selected.video && <video controls preload="none" src={assetUrl(selected.video)}><a href={assetUrl(selected.video)}>{t('Descargar vídeo')}</a></video>}
             <div className="link-row">
-              {selected.github && <a href={selected.github} className="pill"><GitFork size={17}/> Repositorio</a>}
-              {selected.resource && <a href={selected.resource.url} className="pill"><FileText size={17}/> {selected.resource.label}</a>}
-              {selected.walkthrough && <a href={selected.walkthrough} className="pill"><Play size={17}/> Ver vídeo</a>}
-              {selected.demo && <a href={selected.demo} className="pill"><CodeXml size={17}/> Demo</a>}
+              {selected.github && <a href={selected.github} className="pill"><GitFork size={17}/> {t('Repositorio')}</a>}
+              {selected.resource && <a href={selected.resource.url} className="pill"><FileText size={17}/> {t(selected.resource.label)}</a>}
+              {selected.walkthrough && <a href={selected.walkthrough} className="pill"><Play size={17}/> {t('Ver vídeo')}</a>}
+              {selected.demo && <a href={selected.demo} className="pill"><CodeXml size={17}/> {t('Demo')}</a>}
             </div>
           </div>
         </div>}

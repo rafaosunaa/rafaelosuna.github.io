@@ -238,3 +238,6 @@ button { cursor: pointer; }
 @media (max-width: 700px) {
   .catalog-list { grid-template-columns: minmax(0, 1fr); }
 }
+
+.header-controls { display: flex; align-items: center; gap: clamp(.65rem, 2vw, 2rem); }
+.language-select { min-height: 2.55rem; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: .5rem; color: var(--ink); background: var(--paper); font-size: .9rem; }
