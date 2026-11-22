@@ -13,6 +13,8 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
     motion.add('(prefers-reduced-motion: no-preference)', () => {
       const intro = root.querySelector('.intro')
       const counter = root.querySelector('.intro-count')
+      const title = root.querySelector('#hero-title')
+      const titleFill = title?.querySelector('.hero-name--fill')
       const progress = { value: 0 }
       const timeline = gsap.timeline()
       if (intro && counter && !location.hash && scrollY < 40) {
@@ -24,10 +26,13 @@ export function usePortfolioMotion(scope: RefObject<HTMLDivElement | null>) {
           .to(intro, { clipPath: 'inset(0 0 100% 0)', duration: .55, ease: 'power3.inOut' })
           .set(intro, { visibility: 'hidden' })
       }
-      timeline.from(root.querySelectorAll('.hero-line > span'), {
-        yPercent: 62, scaleY: .24, opacity: 0, transformOrigin: 'bottom', duration: .78,
-        ease: 'power4.out', stagger: .11, clearProps: 'transform,transformOrigin,opacity',
-      }, timeline.duration() ? '-=.22' : 0)
+      if (title && titleFill && CSS.supports('-webkit-text-stroke', '1px currentColor') && CSS.supports('clip-path', 'inset(0 100% 0 0)')) {
+        timeline.set(title, { attr: { 'data-filling': 'true' } }, 0)
+          .set(titleFill, { clipPath: 'inset(0 100% 0 0)' }, 0)
+          .to(titleFill, { clipPath: 'inset(0 0% 0 0)', duration: 1.08, ease: 'power2.inOut' }, '+=.08')
+          .set(title, { attr: { 'data-filling': 'false' } })
+          .set(titleFill, { clearProps: 'clipPath' }, '<')
+      }
       timeline.from(root.querySelectorAll('.hero-copy, .orbit-panel'), {
         y: 16, opacity: 0, duration: .55, ease: 'power2.out', stagger: .08, clearProps: 'transform,opacity',
       }, '-=.37')

@@ -43,9 +43,13 @@ function Hero() {
     <div className="shell">
       <div className="hero-title">
         <p className="eyebrow hero-kicker"><span className="section-mark"/>{t(personal.disciplines)}</p>
-        <h1 id="hero-title" aria-label={personal.name}>{personal.headline.map(line => (
-          <span className="hero-line" key={line} aria-hidden="true"><span>{line}</span></span>
-        ))}</h1>
+        <h1 id="hero-title" aria-label={personal.name}>
+          {['base', 'fill'].map(layer => (
+            <span key={layer} className={`hero-name hero-name--${layer}`} aria-hidden="true">
+              {personal.headline.map(line => <span className="hero-line" key={line}><span>{line}</span></span>)}
+            </span>
+          ))}
+        </h1>
       </div>
       <div className="hero-main">
         <div className="hero-copy">
