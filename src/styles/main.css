@@ -239,7 +239,7 @@ button { cursor: pointer; }
 
 .about { background: var(--folio-paper); }
 .about-grid { display: grid; grid-template-columns: minmax(0,1.18fr) minmax(0,1fr); gap: clamp(1.6rem, 6vw, 6rem); align-items: start; margin-top: 1.15rem; padding-top: clamp(1.25rem, 3vw, 2.4rem); border-top: 1px solid var(--folio-rule); }
-.about h2 { font-size: clamp(3.5rem, 7.4vw, 8rem); max-width: 14ch; }
+.about h2 { font-size: clamp(2.45rem, 5.8vw, 6.65rem); max-width: 14ch; overflow-wrap: anywhere; }
 .about-copy p { max-width: 47ch; font-size: clamp(1.1rem, 1.65vw, 1.38rem); line-height: 1.55; color: var(--muted); }
 .about-copy .tags { margin-top: 1.25rem; }
 .portrait { width: min(17rem, 100%); aspect-ratio: 4/5; object-fit: cover; margin-bottom: 1.5rem; }
