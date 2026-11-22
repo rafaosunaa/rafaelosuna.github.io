@@ -60,16 +60,12 @@ function observeHeroTitle(root: HTMLElement, isIntroPlaying: () => boolean) {
 }
 
 function animateSectionEdges(root: HTMLElement) {
-  for (const path of root.querySelectorAll<SVGPathElement>('.section-edge path')) {
-    const rest = path.getAttribute('d')
-    const peak = path.dataset.edgePeak
-    if (!rest || !peak) continue
-
+  for (const tear of root.querySelectorAll<SVGGElement>('.section-tear')) {
     gsap.timeline({
-      scrollTrigger: { trigger: path.ownerSVGElement, start: 'top bottom', end: 'top 32%', scrub: .4 },
+      scrollTrigger: { trigger: tear.ownerSVGElement, start: 'top bottom', end: 'top 32%', scrub: .4 },
     })
-      .to(path, { attr: { d: peak }, duration: .5, ease: 'sine.inOut' })
-      .to(path, { attr: { d: rest }, duration: .5, ease: 'sine.inOut' })
+      .to(tear, { attr: { transform: 'scale(1 1.08)' }, duration: .5, ease: 'sine.inOut' })
+      .to(tear, { attr: { transform: 'scale(1 1)' }, duration: .5, ease: 'sine.inOut' })
   }
 
   const reveals = new Map<Element, gsap.core.Tween>()

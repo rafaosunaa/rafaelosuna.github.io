@@ -216,11 +216,16 @@ button { cursor: pointer; }
   top: 0;
   left: 0;
   width: 100%;
-  height: clamp(1.1rem, 3vw, 2.8rem);
+  height: clamp(2.25rem, 4.35vw, 3.8rem);
   pointer-events: none;
   z-index: -1;
 }
-.section-edge path { fill: var(--edge-source); }
+.about > .section-edge, .contact > .section-edge { transform: scaleX(-1); }
+.section-tear-face { fill: var(--edge-source); }
+.section-tear-backing {
+  fill: #fffaf0;
+  filter: drop-shadow(0 2px 2px #102e5440);
+}
 
 .work, .about, .resume { padding-block: clamp(3.2rem, 6.35vw, 7rem); }
 .work-heading { display: flex; justify-content: space-between; align-items: end; gap: .85rem 1.5rem; flex-wrap: wrap; margin: .65rem 0 clamp(1.25rem, 3vw, 2.65rem); }
